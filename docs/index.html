@@ -1,0 +1,613 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Схема диалога · бот-помощник для бизнеса · Лендвис</title>
+<meta name="description" content="Интерактивная схема состояний Telegram-бота: карта диалога и работающий телефон, синхронизированные между собой. Витрина проекта студии Лендвис.">
+<meta property="og:title" content="Схема диалога · бот-помощник для бизнеса">
+<meta property="og:description" content="Карта состояний Telegram-бота и работающий телефон рядом: нажмите узел — увидите настоящее сообщение и клавиатуру.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://olegg000.github.io/python-faq-bot/">
+<meta property="og:image" content="https://olegg000.github.io/python-faq-bot/preview.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@600;700&family=Golos+Text:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --bg:#0b0e12; --panel:#131920; --panel-2:#182029; --line:#242e39; --line-soft:#1c242d;
+  --ink:#e7edf3; --ink-soft:#93a1af; --ink-faint:#66747f;
+  --acc:#3aa9e0; --acc-dim:rgba(58,169,224,.14); --acc-line:rgba(58,169,224,.45);
+  --ok:#49c98a; --ok-dim:rgba(73,201,138,.14);
+  --warn:#d9a441;
+  --display:'Unbounded',system-ui,sans-serif;
+  --body:'Golos Text',system-ui,-apple-system,sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.6 var(--body);-webkit-font-smoothing:antialiased}
+.wrap{max-width:1200px;margin:0 auto;padding:0 20px}
+a{color:var(--acc)}
+:focus-visible{outline:2px solid var(--acc);outline-offset:3px;border-radius:4px}
+.mono{font-family:var(--mono)}
+
+/* шапка */
+header.top{border-bottom:1px solid var(--line-soft);position:sticky;top:0;background:rgba(11,14,18,.86);backdrop-filter:blur(10px);z-index:30}
+header.top .wrap{display:flex;align-items:center;gap:14px;height:58px}
+.brand{font-family:var(--display);font-weight:700;font-size:16px;letter-spacing:-.01em;text-decoration:none;color:var(--ink)}
+.brand i{font-style:normal;color:var(--acc)}
+.top nav{margin-left:auto;display:flex;gap:8px;align-items:center}
+.top nav a{font:500 13px/1 var(--body);color:var(--ink-soft);text-decoration:none;padding:9px 12px;border:1px solid var(--line);border-radius:7px}
+.top nav a:hover{color:var(--ink);border-color:var(--acc-line)}
+.top nav a.src{color:var(--acc);border-color:var(--acc-line)}
+
+/* герой */
+.hero{padding:52px 0 26px}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--acc);margin:0 0 14px}
+h1{font-family:var(--display);font-weight:700;font-size:clamp(2rem,4.4vw,3.1rem);line-height:1.06;letter-spacing:-.03em;margin:0 0 16px;text-wrap:balance}
+.hero p.lead{color:var(--ink-soft);max-width:60ch;margin:0 0 22px;font-size:17px}
+.facts{display:flex;flex-wrap:wrap;gap:10px;padding:0;margin:0;list-style:none}
+.facts li{font-family:var(--mono);font-size:12.5px;color:var(--ink-soft);border:1px solid var(--line);border-radius:999px;padding:7px 12px}
+.facts li b{color:var(--ink);font-weight:500}
+
+/* рабочая область */
+.studio{display:grid;grid-template-columns:minmax(0,1fr);gap:18px;margin:34px 0 20px}
+@media(min-width:1000px){.studio{grid-template-columns:minmax(0,1fr) 372px;align-items:start}}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:14px}
+.panel-head{display:flex;align-items:center;gap:12px;padding:14px 18px;border-bottom:1px solid var(--line-soft)}
+.panel-head h2{font-size:14.5px;font-weight:600;margin:0}
+.panel-head .hint{margin-left:auto;font-family:var(--mono);font-size:11.5px;color:var(--ink-faint)}
+
+/* граф */
+.graph-box{padding:10px 6px 16px;overflow-x:auto}
+svg.graph{display:block;width:100%;min-width:660px;height:auto}
+.node rect{fill:var(--panel-2);stroke:var(--line);stroke-width:1.5;transition:fill .18s,stroke .18s}
+.node text.t{fill:var(--ink);font-family:var(--body);font-size:13.5px;font-weight:500}
+.node text.s{fill:var(--ink-faint);font-family:var(--mono);font-size:10.5px}
+.node{cursor:pointer}
+.node:hover rect{stroke:var(--acc-line)}
+.node.on rect{fill:var(--acc-dim);stroke:var(--acc);stroke-width:2}
+.node.on text.t{fill:#fff}
+.node.on text.s{fill:var(--acc)}
+.node.term.on rect{fill:var(--ok-dim);stroke:var(--ok)}
+.node.term.on text.s{fill:var(--ok)}
+.node.past rect{stroke:var(--acc-line)}
+.edge{fill:none;stroke:var(--line);stroke-width:1.5}
+.edge.back{stroke-dasharray:4 5;stroke:var(--line-soft)}
+.edge.lit{stroke:var(--acc);stroke-width:2.5}
+.elabel{fill:var(--ink-faint);font-family:var(--mono);font-size:10px}
+.elabel.lit{fill:var(--acc)}
+.legend{display:flex;flex-wrap:wrap;gap:16px;padding:0 18px 16px;font-family:var(--mono);font-size:11.5px;color:var(--ink-faint)}
+.legend i{display:inline-block;width:22px;height:0;border-top:2px solid var(--line);vertical-align:middle;margin-right:6px}
+.legend i.b{border-top-style:dashed}
+.legend i.g{border-top-color:var(--ok)}
+
+/* телефон */
+.phone-col{position:sticky;top:76px}
+.phone{background:#0f151b;border:1px solid var(--line);border-radius:26px;padding:10px;box-shadow:0 24px 60px -30px rgba(0,0,0,.9)}
+.phone-inner{background:#0d1216;border-radius:18px;overflow:hidden;display:flex;flex-direction:column;height:512px}
+.tg-bar{display:flex;align-items:center;gap:10px;padding:11px 13px;background:#141c24;border-bottom:1px solid #1e2831}
+.ava{width:32px;height:32px;border-radius:50%;background:linear-gradient(145deg,#2f89b8,#1d5f81);display:grid;place-items:center;font-size:14px;flex:none}
+.tg-bar .nm{font-size:13.5px;font-weight:600;line-height:1.2}
+.tg-bar .st{font-size:11px;color:var(--ink-faint);font-family:var(--mono)}
+.chat{flex:1;overflow-y:auto;padding:14px 12px;display:flex;flex-direction:column;gap:9px;scroll-behavior:smooth}
+.msg{max-width:88%;padding:9px 12px;border-radius:14px;font-size:13.5px;line-height:1.45;white-space:pre-wrap;word-break:break-word}
+.msg.bot{background:#1b242e;border-bottom-left-radius:5px;align-self:flex-start}
+.msg.me{background:#2a5f80;border-bottom-right-radius:5px;align-self:flex-end}
+.msg .ed{display:block;margin-top:4px;font-family:var(--mono);font-size:10px;color:var(--ink-faint)}
+.kb{display:flex;flex-direction:column;gap:5px;margin-top:8px;align-self:flex-start;width:88%}
+.kb button{width:100%;text-align:center;background:#223040;color:#cfe3f2;border:0;border-radius:9px;padding:9px 10px;font:500 13px/1.3 var(--body);cursor:pointer}
+.kb button:hover{background:#2a3c50}
+.compose{border-top:1px solid #1e2831;padding:9px;display:flex;gap:8px;background:#141c24}
+.compose input{flex:1;min-width:0;background:#0f161c;border:1px solid #253140;border-radius:999px;padding:9px 13px;color:var(--ink);font:400 13.5px var(--body)}
+.compose input::placeholder{color:#5d6a75}
+.compose button{flex:none;background:var(--acc);color:#04222f;border:0;border-radius:999px;width:38px;height:38px;font-size:15px;cursor:pointer;font-weight:700}
+.compose.off{opacity:.45;pointer-events:none}
+.phone-foot{display:flex;gap:8px;margin-top:12px}
+.phone-foot button{flex:1;background:transparent;border:1px solid var(--line);color:var(--ink-soft);border-radius:8px;padding:9px;font:500 12.5px var(--body);cursor:pointer}
+.phone-foot button:hover{color:var(--ink);border-color:var(--acc-line)}
+
+/* карточка состояния */
+.statecard{margin-top:14px;border:1px solid var(--line);border-radius:12px;background:var(--panel);padding:14px 16px}
+.statecard .k{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:6px}
+.statecard .v{font-family:var(--mono);font-size:12.5px;color:var(--acc);word-break:break-all}
+.statecard p{margin:10px 0 0;font-size:13.5px;color:var(--ink-soft)}
+
+/* нижние секции */
+section.block{padding:46px 0;border-top:1px solid var(--line-soft)}
+h2.sec{font-family:var(--display);font-weight:600;font-size:clamp(1.4rem,2.6vw,1.9rem);letter-spacing:-.02em;margin:0 0 8px}
+.sec-lead{color:var(--ink-soft);max-width:64ch;margin:0 0 26px}
+.grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(258px,1fr));gap:14px}
+.f{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:20px}
+.f h3{font-size:16px;font-weight:600;margin:0 0 7px}
+.f p{margin:0;font-size:14px;color:var(--ink-soft)}
+.f code{font-family:var(--mono);font-size:12.5px;background:var(--panel-2);padding:2px 6px;border-radius:5px;color:var(--acc)}
+pre{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 18px;overflow-x:auto;font-family:var(--mono);font-size:13px;color:var(--ink-soft);margin:0}
+pre b{color:var(--ink);font-weight:500}
+footer{border-top:1px solid var(--line-soft);padding:26px 0 44px;color:var(--ink-faint);font-size:13px}
+footer a{color:var(--ink-soft)}
+/* на узких экранах в шапке остаётся только ссылка на исходники */
+@media (max-width:560px){
+  .top nav a:not(.src){display:none}
+  header.top .wrap{gap:10px}
+  .wrap{padding:0 16px}
+}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}.chat{scroll-behavior:auto}*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<header class="top"><div class="wrap">
+  <a class="brand" href="https://olegg000.github.io/lendvis/">ЛЕНД<i>ВИС</i></a>
+  <nav>
+    <a href="#inside">Что внутри</a>
+    <a href="#start">Запуск</a>
+    <a class="src" href="https://github.com/Olegg000/python-faq-bot">Исходники ↗</a>
+  </nav>
+</div></header>
+
+<main class="wrap">
+
+<section class="hero">
+  <p class="eyebrow">Telegram-бот для бизнеса · aiogram 3</p>
+  <h1>Схема диалога,<br>которую можно нажать</h1>
+  <p class="lead">Слева — карта состояний бота: каждый узел это то, что бот реально отвечает. Справа — телефон, который проигрывает выбранный путь. Нажмите узел на схеме или кнопку в телефоне: они всегда показывают одно и то же состояние.</p>
+  <ul class="facts">
+    <li><b>4</b> раздела меню</li>
+    <li><b>3</b> шага в заявке</li>
+    <li><b>11</b> тестов</li>
+    <li>FAQ правится <b>без программиста</b></li>
+  </ul>
+</section>
+
+<div class="studio">
+
+  <div class="panel">
+    <div class="panel-head">
+      <h2>Карта состояний</h2>
+      <span class="hint">нажмите узел</span>
+    </div>
+    <div class="graph-box">
+      <svg class="graph" viewBox="0 0 700 660" role="img" aria-label="Схема состояний диалога бота">
+        <g id="edges"></g>
+        <g id="nodes"></g>
+      </svg>
+    </div>
+    <div class="legend">
+      <span><i></i>переход по кнопке</span>
+      <span><i class="b"></i>возврат в меню</span>
+      <span><i class="g"></i>конец сценария</span>
+    </div>
+  </div>
+
+  <div class="phone-col">
+    <div class="phone">
+      <div class="phone-inner">
+        <div class="tg-bar">
+          <div class="ava" aria-hidden="true">🤖</div>
+          <div>
+            <div class="nm">Бот-помощник</div>
+            <div class="st" id="botState">/start</div>
+          </div>
+        </div>
+        <div class="chat" id="chat" aria-live="polite"></div>
+        <form class="compose off" id="compose" autocomplete="off">
+          <input id="input" placeholder="Бот ждёт нажатия кнопки" aria-label="Сообщение боту">
+          <button type="submit" aria-label="Отправить">→</button>
+        </form>
+      </div>
+    </div>
+    <div class="phone-foot">
+      <button type="button" id="restart">Начать сначала</button>
+      <button type="button" id="playLead">Проиграть заявку</button>
+    </div>
+    <div class="statecard">
+      <div class="k">Состояние</div>
+      <div class="v" id="stateKey">CommandStart</div>
+      <p id="stateNote">Точка входа: команда /start. Бот отвечает приветствием и главным меню.</p>
+    </div>
+  </div>
+
+</div>
+
+<section class="block" id="inside">
+  <h2 class="sec">Что внутри</h2>
+  <p class="sec-lead">Бот сделан так, чтобы заказчик мог менять содержимое сам, а разработчик подключался только к логике.</p>
+  <div class="grid3">
+    <div class="f">
+      <h3>FAQ правит заказчик</h3>
+      <p>Вопросы и ответы лежат в <code>data/faq.json</code>. Добавить пункт — значит дописать две строки в файл: кнопки в меню и обработчик ответа строятся из него автоматически.</p>
+    </div>
+    <div class="f">
+      <h3>Заявки сохраняются</h3>
+      <p>Пошаговый диалог собирает имя и вопрос, показывает их на проверку и после подтверждения дописывает заявку в <code>data/leads.json</code> вместе с логином и временем.</p>
+    </div>
+    <div class="f">
+      <h3>Курсы через провайдер</h3>
+      <p>Источник курсов выбирается переменной <code>RATE_PROVIDER</code>: демо-значения без сети или реальный API. Интерфейс один, поэтому подменить источник — одна строка в конфиге.</p>
+    </div>
+    <div class="f">
+      <h3>Токен только из окружения</h3>
+      <p>Ключ бота читается из <code>BOT_TOKEN</code>, в репозитории лежит лишь <code>.env.example</code>. В коде токена нет ни в одном коммите.</p>
+    </div>
+    <div class="f">
+      <h3>Тесты без сети и токена</h3>
+      <p>11 тестов на <code>pytest</code> проверяют меню, ответы FAQ, весь сценарий заявки с отменой и разбор ответа курсов — не обращаясь ни к Telegram, ни к внешнему API.</p>
+    </div>
+    <div class="f">
+      <h3>Меняется под заказчика</h3>
+      <p>Разделы меню, тексты и прайс — обычные константы и файлы данных. Под конкретный бизнес меняется содержимое, а не архитектура диалога.</p>
+    </div>
+  </div>
+</section>
+
+<section class="block" id="start">
+  <h2 class="sec">Запуск</h2>
+  <p class="sec-lead">Нужен только Python и токен от <span class="mono">@BotFather</span>.</p>
+  <pre><b>git clone https://github.com/Olegg000/python-faq-bot</b>
+cd python-faq-bot
+python3 -m venv venv &amp;&amp; source venv/bin/activate
+pip install -r requirements.txt
+cp .env.example .env        <span style="color:#66747f"># вписать BOT_TOKEN</span>
+<b>python -m bot</b>
+
+<span style="color:#66747f"># тесты — без токена и без сети</span>
+<b>pytest</b></pre>
+</section>
+
+</main>
+
+<footer><div class="wrap">
+  Витрина проекта студии <a href="https://olegg000.github.io/lendvis/">Лендвис</a> · исходники на <a href="https://github.com/Olegg000/python-faq-bot">GitHub</a><br>
+  Диалог на этой странице повторяет логику и тексты бота: это демонстрация сценария, а не подключение к Telegram.
+</div></footer>
+
+<script>
+(function () {
+  "use strict";
+
+  /* Данные взяты один в один из bot/handlers.py, data/faq.json и bot/rates.py */
+  var FAQ = [
+    { q: "Как оформить заказ?",     a: "Нажмите «Задать вопрос» в меню бота или позвоните по телефону +7 (900) 000-00-00. Менеджер свяжется с вами в течение часа в рабочее время." },
+    { q: "Какие способы оплаты?",   a: "Принимаем оплату картой, по СБП и безналичным расчётом для юридических лиц. Оплата производится после согласования заказа." },
+    { q: "Какие сроки выполнения?", a: "Стандартный срок — 3–5 рабочих дней. Срочные заказы обсуждаются индивидуально с менеджером." },
+    { q: "Есть ли доставка?",       a: "Да. По городу доставка бесплатна при заказе от 3000 ₽, по России отправляем транспортными компаниями." }
+  ];
+  var PRICES = "Наши цены:\n\n• Базовый пакет — от 5 000 ₽\n• Стандарт — от 12 000 ₽\n• Премиум — от 25 000 ₽\n\nТочная стоимость зависит от задачи — нажмите «Задать вопрос», и мы посчитаем.";
+  var RATES = "Курсы валют к рублю:\n\nUSD: 92.50 ₽\nEUR: 100.20 ₽\nCNY: 12.70 ₽";
+  var MENU_KB = [
+    { t: "❓ FAQ", go: "faq" },
+    { t: "💰 Цены", go: "prices" },
+    { t: "✉️ Задать вопрос", go: "askName" },
+    { t: "💱 Курс валют", go: "rates" }
+  ];
+  var BACK_KB = [{ t: "⬅️ В меню", go: "menu" }];
+
+  /* Узлы схемы: id, подпись, техническое имя, координаты */
+  var N = {
+    start:     { x: 40,  y: 24,  w: 200, h: 50, t: "/start",            s: "CommandStart",       note: "Точка входа: команда /start. Бот отвечает приветствием и главным меню." },
+    menu:      { x: 40,  y: 116, w: 200, h: 50, t: "Главное меню",      s: "menu:main",          note: "Четыре кнопки меню. Все ветки диалога возвращаются сюда." },
+    faq:       { x: 24,  y: 232, w: 176, h: 50, t: "Список вопросов",   s: "menu:faq",           note: "Кнопки строятся из data/faq.json: сколько пунктов в файле, столько кнопок." },
+    faqAns:    { x: 24,  y: 322, w: 176, h: 50, t: "Ответ на вопрос",   s: "faq:{i}",            note: "Ответ подставляется из того же файла. Кнопки: назад к вопросам или в меню." },
+    prices:    { x: 232, y: 232, w: 160, h: 50, t: "Цены",              s: "menu:prices",        note: "Статичный прайс из константы PRICES_TEXT с кнопкой возврата." },
+    rates:     { x: 232, y: 322, w: 160, h: 50, t: "Курс валют",        s: "menu:rates",         note: "Курсы отдаёт провайдер, выбранный переменной RATE_PROVIDER: демо или реальный API." },
+    askName:   { x: 448, y: 116, w: 216, h: 50, t: "Спросить имя",      s: "AskQuestion.name",   note: "Начало сценария заявки. Бот переходит в состояние ожидания имени." },
+    askQ:      { x: 448, y: 216, w: 216, h: 50, t: "Спросить вопрос",   s: "AskQuestion.question", note: "Имя сохранено в память диалога, бот ждёт текст вопроса." },
+    askConf:   { x: 448, y: 316, w: 216, h: 50, t: "Проверка заявки",   s: "AskQuestion.confirm", note: "Бот показывает собранную заявку и ждёт подтверждения или отмены." },
+    saved:     { x: 470, y: 436, w: 194, h: 50, t: "Заявка принята",    s: "ask:confirm",        note: "Заявка дописывается в data/leads.json: имя, вопрос, логин и время.", term: true },
+    cancelled: { x: 250, y: 436, w: 178, h: 50, t: "Заявка отменена",   s: "ask:cancel",         note: "Память диалога очищается, бот возвращает главное меню." }
+  };
+
+  /* Рёбра: откуда, куда, тип, подпись */
+  var E = [
+    ["start", "menu", "f", ""],
+    ["menu", "faq", "f", ""],
+    ["menu", "prices", "f", ""],
+    ["menu", "rates", "f", ""],
+    ["menu", "askName", "f", "✉️"],
+    ["faq", "faqAns", "f", ""],
+    ["askName", "askQ", "f", "имя"],
+    ["askQ", "askConf", "f", "вопрос"],
+    ["askConf", "saved", "f", "✅"],
+    ["askConf", "cancelled", "f", "❌"],
+    ["faqAns", "menu", "b", ""],
+    ["prices", "menu", "b", ""],
+    ["rates", "menu", "b", ""],
+    ["saved", "menu", "b", ""],
+    ["cancelled", "menu", "b", ""]
+  ];
+
+  /* Путь от старта до узла — для подсветки */
+  var PATH = {
+    start: ["start"],
+    menu: ["start", "menu"],
+    faq: ["start", "menu", "faq"],
+    faqAns: ["start", "menu", "faq", "faqAns"],
+    prices: ["start", "menu", "prices"],
+    rates: ["start", "menu", "rates"],
+    askName: ["start", "menu", "askName"],
+    askQ: ["start", "menu", "askName", "askQ"],
+    askConf: ["start", "menu", "askName", "askQ", "askConf"],
+    saved: ["start", "menu", "askName", "askQ", "askConf", "saved"],
+    cancelled: ["start", "menu", "askName", "askQ", "askConf", "cancelled"]
+  };
+
+  var svgNS = "http://www.w3.org/2000/svg";
+  var gEdges = document.getElementById("edges");
+  var gNodes = document.getElementById("nodes");
+
+  function cx(n) { return n.x + n.w / 2; }
+  function el(name, attrs) {
+    var e = document.createElementNS(svgNS, name);
+    for (var k in attrs) e.setAttribute(k, attrs[k]);
+    return e;
+  }
+
+  /* Ортогональный путь между узлами: вниз, вбок, вниз */
+  function edgePath(a, b) {
+    var ax = cx(a), ay = a.y + a.h, bx = cx(b), by = b.y;
+    if (b.y < a.y) {                       // возврат наверх — огибаем слева
+      var lx = 12;
+      return "M" + a.x + " " + (a.y + a.h / 2) + " H" + lx + " V" + (b.y + b.h / 2) + " H" + b.x;
+    }
+    if (Math.abs(ax - bx) < 2) return "M" + ax + " " + ay + " V" + by;
+    var midY = ay + (by - ay) / 2;
+    return "M" + ax + " " + ay + " V" + midY + " H" + bx + " V" + by;
+  }
+
+  var edgeEls = {};
+  E.forEach(function (e) {
+    var a = N[e[0]], b = N[e[1]];
+    var p = el("path", { d: edgePath(a, b), class: "edge" + (e[2] === "b" ? " back" : "") });
+    gEdges.appendChild(p);
+    edgeEls[e[0] + ">" + e[1]] = p;
+    if (e[3]) {
+      var lx = cx(a) < cx(b) ? (cx(a) + cx(b)) / 2 : cx(b) + 6;
+      var ly = a.y + a.h + (b.y - a.y - a.h) / 2 - 5;
+      var tx = el("text", { x: lx, y: ly, class: "elabel", "text-anchor": "middle" });
+      tx.textContent = e[3];
+      gEdges.appendChild(tx);
+      edgeEls[e[0] + ">" + e[1] + ":label"] = tx;
+    }
+  });
+
+  var nodeEls = {};
+  Object.keys(N).forEach(function (id) {
+    var n = N[id];
+    var g = el("g", { class: "node" + (n.term ? " term" : ""), tabindex: "0", role: "button",
+                      "aria-label": n.t + ", состояние " + n.s });
+    g.appendChild(el("rect", { x: n.x, y: n.y, width: n.w, height: n.h, rx: 9 }));
+    var t1 = el("text", { x: n.x + 14, y: n.y + 22, class: "t" });
+    t1.textContent = n.t;
+    var t2 = el("text", { x: n.x + 14, y: n.y + 38, class: "s" });
+    t2.textContent = n.s;
+    g.appendChild(t1); g.appendChild(t2);
+    g.addEventListener("click", function () { goto(id, true); });
+    g.addEventListener("keydown", function (ev) {
+      if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); goto(id, true); }
+    });
+    gNodes.appendChild(g);
+    nodeEls[id] = g;
+  });
+
+  /* Телефон */
+  var chat = document.getElementById("chat");
+  var compose = document.getElementById("compose");
+  var input = document.getElementById("input");
+  var botState = document.getElementById("botState");
+  var stateKey = document.getElementById("stateKey");
+  var stateNote = document.getElementById("stateNote");
+
+  var lead = { name: "", question: "" };
+  var current = "start";
+  var lastBotBubble = null;   // для имитации edit_text
+  var timers = [];
+
+  function clearTimers() { timers.forEach(clearTimeout); timers = []; }
+
+  function bubble(text, mine, edited) {
+    var d = document.createElement("div");
+    d.className = "msg " + (mine ? "me" : "bot");
+    d.textContent = text;
+    if (edited) {
+      var s = document.createElement("span");
+      s.className = "ed";
+      s.textContent = "изменено";
+      d.appendChild(s);
+    }
+    chat.appendChild(d);
+    chat.scrollTop = chat.scrollHeight;
+    return d;
+  }
+
+  function keyboard(rows) {
+    var k = document.createElement("div");
+    k.className = "kb";
+    rows.forEach(function (b) {
+      var btn = document.createElement("button");
+      btn.type = "button";
+      btn.textContent = b.t;
+      btn.addEventListener("click", function () { press(b); });
+      k.appendChild(btn);
+    });
+    chat.appendChild(k);
+    chat.scrollTop = chat.scrollHeight;
+    return k;
+  }
+
+  function dropKeyboards() {
+    Array.prototype.slice.call(chat.querySelectorAll(".kb")).forEach(function (k) { k.remove(); });
+  }
+
+  /* Реальный бот на callback-кнопках редактирует то же сообщение (edit_text),
+     а в шагах заявки отправляет новое (answer) — здесь так же. */
+  function say(text, rows, edit) {
+    dropKeyboards();
+    if (edit && lastBotBubble) {
+      lastBotBubble.textContent = text;
+      var s = document.createElement("span");
+      s.className = "ed";
+      s.textContent = "изменено";
+      lastBotBubble.appendChild(s);
+    } else {
+      lastBotBubble = bubble(text, false, false);
+    }
+    if (rows) keyboard(rows);
+    chat.scrollTop = chat.scrollHeight;
+  }
+
+  function press(b) {
+    if (b.go === "faqAns") { showFaq(b.i); return; }
+    goto(b.go, false);
+  }
+
+  function showFaq(i) {
+    current = "faqAns";
+    paint();
+    say(FAQ[i].a, [{ t: "⬅️ К вопросам", go: "faq" }, { t: "🏠 В меню", go: "menu" }], true);
+    setState("faqAns", "faq:" + i);
+  }
+
+  function setState(id, keyOverride) {
+    var n = N[id];
+    botState.textContent = keyOverride || n.s;
+    stateKey.textContent = keyOverride || n.s;
+    stateNote.textContent = n.note;
+  }
+
+  function composeOn(on, ph) {
+    compose.classList.toggle("off", !on);
+    input.placeholder = ph || "Бот ждёт нажатия кнопки";
+    input.value = "";
+    if (on) { try { input.focus({ preventScroll: true }); } catch (e) { input.focus(); } }
+  }
+
+  /* Переход в состояние. fromGraph = true → пересобираем чат с нуля по пути */
+  function goto(id, fromGraph) {
+    clearTimers();
+    current = id;
+    paint();
+    setState(id);
+
+    if (fromGraph) {
+      chat.innerHTML = "";
+      lastBotBubble = null;
+      rebuild(id);
+      return;
+    }
+    render(id, true);
+  }
+
+  /* Отрисовка одного состояния в текущий чат */
+  function render(id, edit) {
+    composeOn(false);
+    if (id === "start") {
+      say("Здравствуйте! Я бот-помощник компании.\nОтвечу на частые вопросы, покажу цены и приму вашу заявку.", MENU_KB, false);
+    } else if (id === "menu") {
+      say("Главное меню:", MENU_KB, edit);
+    } else if (id === "faq") {
+      var rows = FAQ.map(function (f, i) { return { t: f.q, go: "faqAns", i: i }; });
+      rows.push({ t: "⬅️ В меню", go: "menu" });
+      say("Частые вопросы:", rows, edit);
+    } else if (id === "faqAns") {
+      showFaq(0);
+    } else if (id === "prices") {
+      say(PRICES, BACK_KB, edit);
+    } else if (id === "rates") {
+      say(RATES, BACK_KB, edit);
+    } else if (id === "askName") {
+      say("Как вас зовут?", null, edit);
+      composeOn(true, "Напишите имя…");
+    } else if (id === "askQ") {
+      say("Опишите ваш вопрос:", null, false);
+      composeOn(true, "Опишите вопрос…");
+    } else if (id === "askConf") {
+      say("Проверьте заявку:\n\nИмя: " + (lead.name || "Олег") + "\nВопрос: " + (lead.question || "Нужен бот для приёма заявок"),
+          [{ t: "✅ Отправить", go: "saved" }, { t: "❌ Отмена", go: "cancelled" }], false);
+    } else if (id === "saved") {
+      say("Спасибо! Заявка принята, менеджер свяжется с вами.", MENU_KB, true);
+    } else if (id === "cancelled") {
+      say("Заявка отменена.", MENU_KB, true);
+    }
+  }
+
+  /* Сборка чата по пути от старта — когда кликнули узел на схеме */
+  function rebuild(id) {
+    var path = PATH[id] || ["start"];
+    if (!lead.name) { lead.name = "Олег"; lead.question = "Нужен бот для приёма заявок"; }
+    path.forEach(function (step, idx) {
+      var last = idx === path.length - 1;
+      if (step === "askQ" && path.indexOf("askName") >= 0) bubble(lead.name, true);
+      if (step === "askConf") bubble(lead.question, true);
+      render(step, idx > 0 && step !== "askQ" && step !== "askConf");
+      if (!last) dropKeyboards();
+    });
+    setState(id);
+    if (id !== "askName" && id !== "askQ") composeOn(false);
+  }
+
+  function paint() {
+    var path = PATH[current] || [];
+    Object.keys(nodeEls).forEach(function (id) {
+      nodeEls[id].classList.toggle("on", id === current);
+      nodeEls[id].classList.toggle("past", path.indexOf(id) >= 0 && id !== current);
+    });
+    Object.keys(edgeEls).forEach(function (k) {
+      if (k.indexOf(":label") > 0) return;
+      var parts = k.split(">");
+      var lit = path.indexOf(parts[0]) >= 0 && path.indexOf(parts[1]) === path.indexOf(parts[0]) + 1;
+      edgeEls[k].classList.toggle("lit", lit);
+      var lab = edgeEls[k + ":label"];
+      if (lab) lab.classList.toggle("lit", lit);
+    });
+  }
+
+  compose.addEventListener("submit", function (ev) {
+    ev.preventDefault();
+    var v = input.value.trim();
+    if (!v) return;
+    bubble(v, true);
+    input.value = "";
+    if (current === "askName") {
+      lead.name = v;
+      goto("askQ", false);
+    } else if (current === "askQ") {
+      lead.question = v;
+      goto("askConf", false);
+    }
+  });
+
+  document.getElementById("restart").addEventListener("click", function () {
+    clearTimers();
+    lead = { name: "", question: "" };
+    chat.innerHTML = "";
+    lastBotBubble = null;
+    current = "start";
+    paint(); setState("start"); render("start", false);
+  });
+
+  /* Автопрогон сценария заявки — показывает шаги с паузами */
+  document.getElementById("playLead").addEventListener("click", function () {
+    clearTimers();
+    var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    var gap = reduce ? 0 : 850;
+    lead = { name: "", question: "" };
+    chat.innerHTML = ""; lastBotBubble = null;
+    current = "start"; paint(); setState("start"); render("start", false);
+    var steps = [
+      function () { goto("askName", false); },
+      function () { bubble("Олег", true); lead.name = "Олег"; goto("askQ", false); },
+      function () { bubble("Нужен бот для приёма заявок", true); lead.question = "Нужен бот для приёма заявок"; goto("askConf", false); },
+      function () { goto("saved", false); }
+    ];
+    steps.forEach(function (fn, i) { timers.push(setTimeout(fn, gap * (i + 1))); });
+  });
+
+  /* старт */
+  paint(); setState("start"); render("start", false);
+})();
+</script>
+</body>
+</html>

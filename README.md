@@ -1,5 +1,17 @@
 # Telegram-бот для малого бизнеса (aiogram 3)
 
+**[Открыть интерактивную схему диалога →](https://olegg000.github.io/python-faq-bot/)**
+
+> **EN (summary).** A Telegram assistant bot for small businesses, built with
+> aiogram 3: an inline menu (FAQ, prices, lead capture, currency rates), FAQ
+> answers editable in a plain JSON file, a multi-step lead dialog stored to
+> disk, and currency rates behind a swappable provider interface. Covered by 11
+> pytest tests that need neither network nor a real token. The live page above
+> shows the bot's state machine next to a working phone: click a node on the
+> map or a button in the chat — both always show the same state.
+
+[![Схема диалога и телефон рядом](docs/shots/desktop-start.webp)](https://olegg000.github.io/python-faq-bot/)
+
 Бот-помощник, который отвечает на частые вопросы клиентов, показывает цены,
 принимает заявки и показывает актуальные курсы валют. Готовый каркас, который
 быстро настраивается под любой бизнес: доставка, услуги, магазин, салон.
@@ -15,6 +27,22 @@
 - **Тесты** — pytest покрывает FSM-сценарий целиком, FAQ и провайдеры курсов;
   работают без сети и без реального токена
 
+## Витрина
+
+Страница [«Схема диалога»](https://olegg000.github.io/python-faq-bot/) показывает
+карту состояний бота рядом с работающим телефоном. Нажатие узла на схеме и
+нажатие кнопки в чате приводят к одному и тому же состоянию, а тексты, вопросы
+FAQ и шаги заявки взяты один в один из кода и `data/faq.json`.
+
+| Ответ из FAQ | Сценарий заявки |
+|---|---|
+| ![Список вопросов и ответ, подсвеченный на схеме](docs/shots/desktop-faq.webp) | ![Пошаговый сбор заявки с подсветкой пути](docs/shots/desktop-lead.webp) |
+
+<img src="docs/shots/mobile.webp" width="320" alt="Мобильная версия страницы">
+
+Диалог на странице повторяет логику бота, но не подключается к Telegram — это
+демонстрация сценария, а не рабочий бот в браузере.
+
 ## Структура проекта
 
 ```
@@ -28,6 +56,7 @@ python-faq-bot/
 │   ├── faq.json        # вопросы и ответы FAQ (редактируется без кода)
 │   └── leads.json      # заявки клиентов (создаётся автоматически)
 ├── tests/              # юнит-тесты (pytest)
+├── docs/               # витрина проекта (GitHub Pages)
 ├── .env.example        # образец конфигурации
 └── requirements.txt
 ```
