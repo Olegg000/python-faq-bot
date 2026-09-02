@@ -1,20 +1,25 @@
-import json
-
-from bot import handlers
-from bot.handlers import AskQuestion
+from bot import repo
+from bot.handlers import common as handlers
+from bot.handlers.common import AskQuestion
 from tests.conftest import make_callback, make_message
 
 
-async def test_start_shows_menu():
+async def test_start_shows_menu_and_saves_user(session):
     message = make_message("/start")
     await handlers.cmd_start(message)
 
     message.answer.assert_called_once()
     markup = message.answer.call_args.kwargs["reply_markup"]
     texts = [btn.text for row in markup.inline_keyboard for btn in row]
-    assert len(texts) == 4
+    data = [btn.callback_data for row in markup.inline_keyboard for btn in row]
+    # запись — главное действие бота, она должна быть в меню и первой
+    assert data[0] == "menu:book"
+    assert "menu:mybookings" in data
+    assert {"menu:faq", "menu:prices", "menu:ask", "menu:rates"} <= set(data)
     assert any("FAQ" in t for t in texts)
     assert any("вопрос" in t for t in texts)
+
+    assert await repo.all_user_ids(session) == [100]
 
 
 async def test_faq_list_shows_all_questions():
@@ -53,10 +58,7 @@ async def test_rates_uses_demo_provider(monkeypatch):
     assert "EUR" in text and "CNY" in text
 
 
-async def test_ask_flow_full(state, tmp_path, monkeypatch):
-    leads_file = tmp_path / "leads.json"
-    monkeypatch.setattr(handlers, "LEADS_FILE", leads_file)
-
+async def test_ask_flow_full(state, session):
     # шаг 1: нажали «Задать вопрос»
     callback = make_callback("menu:ask")
     await handlers.ask_start(callback, state)
@@ -75,22 +77,20 @@ async def test_ask_flow_full(state, tmp_path, monkeypatch):
     assert "Иван" in confirm_text
     assert "Сколько стоит доставка?" in confirm_text
 
-    # шаг 4: подтверждение — заявка записана
+    # шаг 4: подтверждение — заявка в базе
     callback = make_callback("ask:confirm")
     await handlers.ask_confirm(callback, state)
     assert await state.get_state() is None
 
-    leads = json.loads(leads_file.read_text(encoding="utf-8"))
+    leads = await repo.list_leads(session)
     assert len(leads) == 1
-    assert leads[0]["name"] == "Иван"
-    assert leads[0]["question"] == "Сколько стоит доставка?"
-    assert leads[0]["user_id"] == 100
+    assert leads[0].name == "Иван"
+    assert leads[0].question == "Сколько стоит доставка?"
+    assert leads[0].user_id == 100
+    assert await repo.all_user_ids(session) == [100]  # клиент заведён вместе с заявкой
 
 
-async def test_ask_cancel(state, tmp_path, monkeypatch):
-    leads_file = tmp_path / "leads.json"
-    monkeypatch.setattr(handlers, "LEADS_FILE", leads_file)
-
+async def test_ask_cancel(state, session):
     await handlers.ask_start(make_callback("menu:ask"), state)
     await handlers.ask_name(make_message("Иван"), state)
     await handlers.ask_question(make_message("Вопрос"), state)
@@ -99,15 +99,11 @@ async def test_ask_cancel(state, tmp_path, monkeypatch):
     await handlers.ask_cancel(callback, state)
 
     assert await state.get_state() is None
-    assert not leads_file.exists()
+    assert await repo.list_leads(session) == []
 
 
-async def test_save_lead_appends(tmp_path, monkeypatch):
-    leads_file = tmp_path / "leads.json"
-    monkeypatch.setattr(handlers, "LEADS_FILE", leads_file)
+async def test_package_router_collects_submodules():
+    from bot import handlers as package
 
-    handlers.save_lead({"name": "A"})
-    handlers.save_lead({"name": "B"})
-
-    leads = json.loads(leads_file.read_text(encoding="utf-8"))
-    assert [lead["name"] for lead in leads] == ["A", "B"]
+    observers = package.router.sub_routers
+    assert handlers.router in observers

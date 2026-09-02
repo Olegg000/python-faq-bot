@@ -1,7 +1,6 @@
-"""Все хендлеры бота: меню, FAQ, заявки (FSM), курсы валют."""
+"""Общие хендлеры: меню, FAQ, цены, курсы валют, заявка (FSM)."""
 
 import json
-from datetime import datetime, timezone
 from pathlib import Path
 
 from aiogram import F, Router
@@ -10,10 +9,10 @@ from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
 from aiogram.types import CallbackQuery, InlineKeyboardButton, InlineKeyboardMarkup, Message
 
-from bot import config, rates
+from bot import config, db, rates, repo
+from bot.services.notify import notify_new_lead
 
-DATA_DIR = Path(__file__).resolve().parent.parent / "data"
-LEADS_FILE = DATA_DIR / "leads.json"
+DATA_DIR = Path(__file__).resolve().parent.parent.parent / "data"
 FAQ = json.loads((DATA_DIR / "faq.json").read_text(encoding="utf-8"))
 
 PRICES_TEXT = (
@@ -35,6 +34,8 @@ class AskQuestion(StatesGroup):
 
 def main_menu() -> InlineKeyboardMarkup:
     return InlineKeyboardMarkup(inline_keyboard=[
+        [InlineKeyboardButton(text="🗓 Записаться", callback_data="menu:book")],
+        [InlineKeyboardButton(text="📋 Мои записи", callback_data="menu:mybookings")],
         [InlineKeyboardButton(text="❓ FAQ", callback_data="menu:faq")],
         [InlineKeyboardButton(text="💰 Цены", callback_data="menu:prices")],
         [InlineKeyboardButton(text="✉️ Задать вопрос", callback_data="menu:ask")],
@@ -48,14 +49,15 @@ def back_button() -> InlineKeyboardMarkup:
     ])
 
 
-def save_lead(lead: dict) -> None:
-    leads = json.loads(LEADS_FILE.read_text(encoding="utf-8")) if LEADS_FILE.exists() else []
-    leads.append(lead)
-    LEADS_FILE.write_text(json.dumps(leads, ensure_ascii=False, indent=2), encoding="utf-8")
-
-
 @router.message(CommandStart())
 async def cmd_start(message: Message) -> None:
+    async with db.session() as s:
+        await repo.upsert_user(
+            s,
+            message.from_user.id,
+            message.from_user.username,
+            message.from_user.full_name,
+        )
     await message.answer(
         "Здравствуйте! Я бот-помощник компании.\n"
         "Отвечу на частые вопросы, покажу цены и приму вашу заявку.",
@@ -144,13 +146,15 @@ async def ask_question(message: Message, state: FSMContext) -> None:
 @router.callback_query(AskQuestion.confirm, F.data == "ask:confirm")
 async def ask_confirm(callback: CallbackQuery, state: FSMContext) -> None:
     data = await state.get_data()
-    save_lead({
-        "name": data["name"],
-        "question": data["question"],
-        "user_id": callback.from_user.id,
-        "username": callback.from_user.username,
-        "created_at": datetime.now(timezone.utc).isoformat(),
-    })
+    async with db.session() as s:
+        user = await repo.upsert_user(
+            s,
+            callback.from_user.id,
+            callback.from_user.username,
+            callback.from_user.full_name,
+        )
+        lead = await repo.create_lead(s, callback.from_user.id, data["name"], data["question"])
+        await notify_new_lead(callback.bot, lead, user)
     await state.clear()
     await callback.message.edit_text(
         "Спасибо! Заявка принята, менеджер свяжется с вами.",

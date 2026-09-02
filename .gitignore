@@ -4,4 +4,6 @@ __pycache__/
 *.pyc
 .env
 data/leads.json
+data/*.db
+data/*.db-journal
 .pytest_cache/
