@@ -3,10 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Схема диалога · бот-помощник для бизнеса · Лендвис</title>
-<meta name="description" content="Интерактивная схема состояний Telegram-бота: карта диалога и работающий телефон, синхронизированные между собой. Витрина проекта студии Лендвис.">
-<meta property="og:title" content="Схема диалога · бот-помощник для бизнеса">
-<meta property="og:description" content="Карта состояний Telegram-бота и работающий телефон рядом: нажмите узел — увидите настоящее сообщение и клавиатуру.">
+<title>Бот записи клиентов · Лендвис</title>
+<meta name="description" content="Telegram-бот для сферы услуг: запись на свободные слоты с учётом длительности, напоминания и админ-панель с выручкой и конверсией. Витрина проекта студии Лендвис.">
+<meta property="og:title" content="Бот записи клиентов · Лендвис">
+<meta property="og:description" content="Запишитесь прямо на странице: слоты считаются той же арифметикой, что в боте, а панель администратора пересчитывает выручку на глазах.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://olegg000.github.io/python-faq-bot/">
 <meta property="og:image" content="https://olegg000.github.io/python-faq-bot/preview.png">
@@ -19,8 +19,8 @@
   --bg:#0b0e12; --panel:#131920; --panel-2:#182029; --line:#242e39; --line-soft:#1c242d;
   --ink:#e7edf3; --ink-soft:#93a1af; --ink-faint:#66747f;
   --acc:#3aa9e0; --acc-dim:rgba(58,169,224,.14); --acc-line:rgba(58,169,224,.45);
-  --ok:#49c98a; --ok-dim:rgba(73,201,138,.14);
-  --warn:#d9a441;
+  --ok:#49c98a; --ok-dim:rgba(73,201,138,.13);
+  --busy:#c4713f; --busy-dim:rgba(196,113,63,.18);
   --display:'Unbounded',system-ui,sans-serif;
   --body:'Golos Text',system-ui,-apple-system,sans-serif;
   --mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
@@ -31,10 +31,8 @@ body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.6 var(--body
 .wrap{max-width:1200px;margin:0 auto;padding:0 20px}
 a{color:var(--acc)}
 :focus-visible{outline:2px solid var(--acc);outline-offset:3px;border-radius:4px}
-.mono{font-family:var(--mono)}
 
-/* шапка */
-header.top{border-bottom:1px solid var(--line-soft);position:sticky;top:0;background:rgba(11,14,18,.86);backdrop-filter:blur(10px);z-index:30}
+header.top{border-bottom:1px solid var(--line-soft);position:sticky;top:0;background:rgba(11,14,18,.88);backdrop-filter:blur(10px);z-index:30}
 header.top .wrap{display:flex;align-items:center;gap:14px;height:58px}
 .brand{font-family:var(--display);font-weight:700;font-size:16px;letter-spacing:-.01em;text-decoration:none;color:var(--ink)}
 .brand i{font-style:normal;color:var(--acc)}
@@ -43,29 +41,31 @@ header.top .wrap{display:flex;align-items:center;gap:14px;height:58px}
 .top nav a:hover{color:var(--ink);border-color:var(--acc-line)}
 .top nav a.src{color:var(--acc);border-color:var(--acc-line)}
 
-/* герой */
-.hero{padding:52px 0 26px}
+.hero{padding:54px 0 20px}
 .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--acc);margin:0 0 14px}
-h1{font-family:var(--display);font-weight:700;font-size:clamp(2rem,4.4vw,3.1rem);line-height:1.06;letter-spacing:-.03em;margin:0 0 16px;text-wrap:balance}
-.hero p.lead{color:var(--ink-soft);max-width:60ch;margin:0 0 22px;font-size:17px}
+h1{font-family:var(--display);font-weight:700;font-size:clamp(2rem,4.6vw,3.2rem);line-height:1.05;letter-spacing:-.03em;margin:0 0 16px;text-wrap:balance}
+.hero p.lead{color:var(--ink-soft);max-width:62ch;margin:0 0 22px;font-size:17px}
 .facts{display:flex;flex-wrap:wrap;gap:10px;padding:0;margin:0;list-style:none}
 .facts li{font-family:var(--mono);font-size:12.5px;color:var(--ink-soft);border:1px solid var(--line);border-radius:999px;padding:7px 12px}
 .facts li b{color:var(--ink);font-weight:500}
 
-/* рабочая область */
-.studio{display:grid;grid-template-columns:minmax(0,1fr);gap:18px;margin:34px 0 20px}
-@media(min-width:1000px){.studio{grid-template-columns:minmax(0,1fr) 372px;align-items:start}}
+section.block{padding:44px 0;border-top:1px solid var(--line-soft);margin-top:38px}
+.sec-head{margin-bottom:24px}
+h2.sec{font-family:var(--display);font-weight:600;font-size:clamp(1.35rem,2.6vw,1.85rem);letter-spacing:-.02em;margin:0 0 8px}
+.sec-lead{color:var(--ink-soft);max-width:66ch;margin:0}
 .panel{background:var(--panel);border:1px solid var(--line);border-radius:14px}
-.panel-head{display:flex;align-items:center;gap:12px;padding:14px 18px;border-bottom:1px solid var(--line-soft)}
-.panel-head h2{font-size:14.5px;font-weight:600;margin:0}
+.panel-head{display:flex;align-items:center;gap:12px;padding:14px 18px;border-bottom:1px solid var(--line-soft);flex-wrap:wrap}
+.panel-head h3{font-size:14.5px;font-weight:600;margin:0}
 .panel-head .hint{margin-left:auto;font-family:var(--mono);font-size:11.5px;color:var(--ink-faint)}
 
-/* граф */
-.graph-box{padding:10px 6px 16px;overflow-x:auto}
-svg.graph{display:block;width:100%;min-width:660px;height:auto}
+/* граф + телефон */
+.studio{display:grid;grid-template-columns:minmax(0,1fr);gap:18px;margin-top:30px}
+@media(min-width:1040px){.studio{grid-template-columns:minmax(0,1fr) 366px;align-items:start}}
+.graph-box{padding:10px 6px 14px;overflow-x:auto}
+svg.graph{display:block;width:100%;min-width:940px;height:auto}
 .node rect{fill:var(--panel-2);stroke:var(--line);stroke-width:1.5;transition:fill .18s,stroke .18s}
-.node text.t{fill:var(--ink);font-family:var(--body);font-size:13.5px;font-weight:500}
-.node text.s{fill:var(--ink-faint);font-family:var(--mono);font-size:10.5px}
+.node text.t{fill:var(--ink);font-family:var(--body);font-size:12.5px;font-weight:500}
+.node text.s{fill:var(--ink-faint);font-family:var(--mono);font-size:10px}
 .node{cursor:pointer}
 .node:hover rect{stroke:var(--acc-line)}
 .node.on rect{fill:var(--acc-dim);stroke:var(--acc);stroke-width:2}
@@ -74,31 +74,26 @@ svg.graph{display:block;width:100%;min-width:660px;height:auto}
 .node.term.on rect{fill:var(--ok-dim);stroke:var(--ok)}
 .node.term.on text.s{fill:var(--ok)}
 .node.past rect{stroke:var(--acc-line)}
+.lane-label{fill:var(--ink-faint);font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase}
 .edge{fill:none;stroke:var(--line);stroke-width:1.5}
 .edge.back{stroke-dasharray:4 5;stroke:var(--line-soft)}
 .edge.lit{stroke:var(--acc);stroke-width:2.5}
-.elabel{fill:var(--ink-faint);font-family:var(--mono);font-size:10px}
-.elabel.lit{fill:var(--acc)}
-.legend{display:flex;flex-wrap:wrap;gap:16px;padding:0 18px 16px;font-family:var(--mono);font-size:11.5px;color:var(--ink-faint)}
-.legend i{display:inline-block;width:22px;height:0;border-top:2px solid var(--line);vertical-align:middle;margin-right:6px}
-.legend i.b{border-top-style:dashed}
-.legend i.g{border-top-color:var(--ok)}
 
-/* телефон */
 .phone-col{position:sticky;top:76px}
 .phone{background:#0f151b;border:1px solid var(--line);border-radius:26px;padding:10px;box-shadow:0 24px 60px -30px rgba(0,0,0,.9)}
-.phone-inner{background:#0d1216;border-radius:18px;overflow:hidden;display:flex;flex-direction:column;height:512px}
+.phone-inner{background:#0d1216;border-radius:18px;overflow:hidden;display:flex;flex-direction:column;height:524px}
 .tg-bar{display:flex;align-items:center;gap:10px;padding:11px 13px;background:#141c24;border-bottom:1px solid #1e2831}
 .ava{width:32px;height:32px;border-radius:50%;background:linear-gradient(145deg,#2f89b8,#1d5f81);display:grid;place-items:center;font-size:14px;flex:none}
 .tg-bar .nm{font-size:13.5px;font-weight:600;line-height:1.2}
 .tg-bar .st{font-size:11px;color:var(--ink-faint);font-family:var(--mono)}
 .chat{flex:1;overflow-y:auto;padding:14px 12px;display:flex;flex-direction:column;gap:9px;scroll-behavior:smooth}
-.msg{max-width:88%;padding:9px 12px;border-radius:14px;font-size:13.5px;line-height:1.45;white-space:pre-wrap;word-break:break-word}
+.msg{max-width:90%;padding:9px 12px;border-radius:14px;font-size:13.5px;line-height:1.45;white-space:pre-wrap;word-break:break-word}
 .msg.bot{background:#1b242e;border-bottom-left-radius:5px;align-self:flex-start}
 .msg.me{background:#2a5f80;border-bottom-right-radius:5px;align-self:flex-end}
 .msg .ed{display:block;margin-top:4px;font-family:var(--mono);font-size:10px;color:var(--ink-faint)}
-.kb{display:flex;flex-direction:column;gap:5px;margin-top:8px;align-self:flex-start;width:88%}
-.kb button{width:100%;text-align:center;background:#223040;color:#cfe3f2;border:0;border-radius:9px;padding:9px 10px;font:500 13px/1.3 var(--body);cursor:pointer}
+.kb{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px;align-self:flex-start;width:92%}
+.kb button{flex:1 1 100%;text-align:center;background:#223040;color:#cfe3f2;border:0;border-radius:9px;padding:9px 10px;font:500 12.5px/1.3 var(--body);cursor:pointer}
+.kb button.third{flex:1 1 28%}
 .kb button:hover{background:#2a3c50}
 .compose{border-top:1px solid #1e2831;padding:9px;display:flex;gap:8px;background:#141c24}
 .compose input{flex:1;min-width:0;background:#0f161c;border:1px solid #253140;border-radius:999px;padding:9px 13px;color:var(--ink);font:400 13.5px var(--body)}
@@ -109,26 +104,60 @@ svg.graph{display:block;width:100%;min-width:660px;height:auto}
 .phone-foot button{flex:1;background:transparent;border:1px solid var(--line);color:var(--ink-soft);border-radius:8px;padding:9px;font:500 12.5px var(--body);cursor:pointer}
 .phone-foot button:hover{color:var(--ink);border-color:var(--acc-line)}
 
-/* карточка состояния */
-.statecard{margin-top:14px;border:1px solid var(--line);border-radius:12px;background:var(--panel);padding:14px 16px}
-.statecard .k{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:6px}
-.statecard .v{font-family:var(--mono);font-size:12.5px;color:var(--acc);word-break:break-all}
-.statecard p{margin:10px 0 0;font-size:13.5px;color:var(--ink-soft)}
+/* таймлайн слотов */
+.slotbar{display:flex;flex-wrap:wrap;gap:8px;padding:14px 18px;border-bottom:1px solid var(--line-soft)}
+.slotbar button{background:var(--panel-2);border:1px solid var(--line);color:var(--ink-soft);border-radius:8px;padding:8px 12px;font:500 12.5px var(--body);cursor:pointer}
+.slotbar button.on{background:var(--acc-dim);border-color:var(--acc);color:var(--ink)}
+.slotbar.daybar{border-bottom:1px solid var(--line-soft)}
+.slotbar.daybar button{font-family:var(--mono);font-size:12px}
+.slotbar .free{font-family:var(--mono);font-size:11px;color:var(--ink-faint);margin-left:6px}
+.slotbar .dur{font-family:var(--mono);font-size:11.5px;color:var(--ink-faint);margin-left:4px}
+.timeline{padding:18px;overflow-x:auto}
+.tl-grid{display:grid;grid-template-columns:repeat(20,minmax(46px,1fr));gap:4px;min-width:940px}
+.cell{border:1px solid var(--line);border-radius:7px;padding:9px 4px;text-align:center;font-family:var(--mono);font-size:11.5px;color:var(--ink-soft);background:var(--panel-2);cursor:pointer;transition:background .15s,border-color .15s,color .15s}
+.cell:hover:not(.busy):not(.past):not(.nofit){border-color:var(--acc);color:var(--ink)}
+.cell.pv{background:var(--acc-dim);border-color:var(--acc);color:#fff}
+.cell.busy{background:var(--busy-dim);border-color:rgba(196,113,63,.5);color:#e0a276;cursor:not-allowed}
+.cell.past,.cell.nofit{opacity:.3;cursor:not-allowed}
+.tl-legend{display:flex;flex-wrap:wrap;gap:16px;padding:0 18px 16px;font-family:var(--mono);font-size:11.5px;color:var(--ink-faint)}
+.tl-legend i{display:inline-block;width:12px;height:12px;border-radius:3px;vertical-align:-2px;margin-right:6px;border:1px solid var(--line);background:var(--panel-2)}
+.tl-legend i.b{background:var(--busy-dim);border-color:rgba(196,113,63,.5)}
+.tl-legend i.p{background:var(--acc-dim);border-color:var(--acc)}
+.tl-note{padding:0 18px 18px;color:var(--ink-soft);font-size:14px;margin:0}
+.tl-note b{color:var(--ink);font-weight:600}
 
-/* нижние секции */
-section.block{padding:46px 0;border-top:1px solid var(--line-soft)}
-h2.sec{font-family:var(--display);font-weight:600;font-size:clamp(1.4rem,2.6vw,1.9rem);letter-spacing:-.02em;margin:0 0 8px}
-.sec-lead{color:var(--ink-soft);max-width:64ch;margin:0 0 26px}
+/* дашборд */
+.dash{display:grid;grid-template-columns:repeat(auto-fit,minmax(232px,1fr));gap:14px;margin-bottom:14px}
+.kpi{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px}
+.kpi .k{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:8px}
+.kpi .v{font-family:var(--display);font-weight:700;font-size:clamp(1.5rem,3vw,2rem);letter-spacing:-.02em;font-variant-numeric:tabular-nums;line-height:1}
+.kpi .v.money{color:var(--ok)}
+.kpi .v.acc{color:var(--acc)}
+.kpi .sub{margin-top:7px;font-size:13px;color:var(--ink-soft)}
+.dash2{display:grid;grid-template-columns:minmax(0,1fr);gap:14px}
+@media(min-width:860px){.dash2{grid-template-columns:minmax(0,1.1fr) minmax(0,1fr)}}
+.today{padding:8px 0 14px}
+.today ul{list-style:none;margin:0;padding:0}
+.today li{display:flex;gap:12px;align-items:baseline;padding:10px 18px;border-bottom:1px solid var(--line-soft);font-size:14px}
+.today li:last-child{border-bottom:0}
+.today .tm{font-family:var(--mono);color:var(--acc);font-size:13px;flex:none}
+.today .who{color:var(--ink-faint);margin-left:auto;font-size:13px;flex:none}
+.today .empty{padding:18px;color:var(--ink-faint);font-size:14px}
+.tops{padding:14px 18px 18px}
+.top-row{display:grid;grid-template-columns:minmax(96px,auto) 1fr auto;gap:10px;align-items:center;margin-bottom:11px;font-size:13.5px}
+.top-row .bar{height:8px;border-radius:999px;background:var(--panel-2);overflow:hidden}
+.top-row .bar i{display:block;height:100%;background:var(--acc);border-radius:999px}
+.top-row .n{font-family:var(--mono);color:var(--ink-soft);font-size:12.5px}
+
 .grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(258px,1fr));gap:14px}
 .f{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:20px}
 .f h3{font-size:16px;font-weight:600;margin:0 0 7px}
 .f p{margin:0;font-size:14px;color:var(--ink-soft)}
-.f code{font-family:var(--mono);font-size:12.5px;background:var(--panel-2);padding:2px 6px;border-radius:5px;color:var(--acc)}
+.f code,pre code{font-family:var(--mono);font-size:12.5px;background:var(--panel-2);padding:2px 6px;border-radius:5px;color:var(--acc)}
 pre{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 18px;overflow-x:auto;font-family:var(--mono);font-size:13px;color:var(--ink-soft);margin:0}
 pre b{color:var(--ink);font-weight:500}
-footer{border-top:1px solid var(--line-soft);padding:26px 0 44px;color:var(--ink-faint);font-size:13px}
+footer{border-top:1px solid var(--line-soft);padding:26px 0 44px;color:var(--ink-faint);font-size:13px;margin-top:38px}
 footer a{color:var(--ink-soft)}
-/* на узких экранах в шапке остаётся только ссылка на исходники */
 @media (max-width:560px){
   .top nav a:not(.src){display:none}
   header.top .wrap{gap:10px}
@@ -142,8 +171,9 @@ footer a{color:var(--ink-soft)}
 <header class="top"><div class="wrap">
   <a class="brand" href="https://olegg000.github.io/lendvis/">ЛЕНД<i>ВИС</i></a>
   <nav>
+    <a href="#slots">Слоты</a>
+    <a href="#admin">Админка</a>
     <a href="#inside">Что внутри</a>
-    <a href="#start">Запуск</a>
     <a class="src" href="https://github.com/Olegg000/python-faq-bot">Исходники ↗</a>
   </nav>
 </div></header>
@@ -151,34 +181,26 @@ footer a{color:var(--ink-soft)}
 <main class="wrap">
 
 <section class="hero">
-  <p class="eyebrow">Telegram-бот для бизнеса · aiogram 3</p>
-  <h1>Схема диалога,<br>которую можно нажать</h1>
-  <p class="lead">Слева — карта состояний бота: каждый узел это то, что бот реально отвечает. Справа — телефон, который проигрывает выбранный путь. Нажмите узел на схеме или кнопку в телефоне: они всегда показывают одно и то же состояние.</p>
+  <p class="eyebrow">Telegram-бот для сферы услуг · aiogram 3</p>
+  <h1>Бот, который сам<br>ведёт запись клиентов</h1>
+  <p class="lead">Клиент выбирает услугу и свободное время прямо в переписке, бот напоминает о визите, а владелец видит расписание и выручку в той же Telegram. Ниже — работающая имитация: запишитесь, и панель администратора пересчитает цифры на глазах.</p>
   <ul class="facts">
-    <li><b>4</b> раздела меню</li>
-    <li><b>3</b> шага в заявке</li>
-    <li><b>11</b> тестов</li>
-    <li>FAQ правится <b>без программиста</b></li>
+    <li><b>5</b> услуг в прайсе</li>
+    <li>слоты с учётом <b>длительности</b></li>
+    <li>напоминания за <b>24 ч</b> и <b>2 ч</b></li>
+    <li>админка с <b>выручкой</b></li>
+    <li><b>109</b> тестов</li>
   </ul>
 </section>
 
 <div class="studio">
-
   <div class="panel">
     <div class="panel-head">
-      <h2>Карта состояний</h2>
+      <h3>Карта диалога</h3>
       <span class="hint">нажмите узел</span>
     </div>
     <div class="graph-box">
-      <svg class="graph" viewBox="0 0 700 660" role="img" aria-label="Схема состояний диалога бота">
-        <g id="edges"></g>
-        <g id="nodes"></g>
-      </svg>
-    </div>
-    <div class="legend">
-      <span><i></i>переход по кнопке</span>
-      <span><i class="b"></i>возврат в меню</span>
-      <span><i class="g"></i>конец сценария</span>
+      <svg class="graph" id="graph" role="img" aria-label="Схема состояний диалога бота"></svg>
     </div>
   </div>
 
@@ -186,9 +208,9 @@ footer a{color:var(--ink-soft)}
     <div class="phone">
       <div class="phone-inner">
         <div class="tg-bar">
-          <div class="ava" aria-hidden="true">🤖</div>
+          <div class="ava" aria-hidden="true">💈</div>
           <div>
-            <div class="nm">Бот-помощник</div>
+            <div class="nm">Салон · бот записи</div>
             <div class="st" id="botState">/start</div>
           </div>
         </div>
@@ -201,59 +223,97 @@ footer a{color:var(--ink-soft)}
     </div>
     <div class="phone-foot">
       <button type="button" id="restart">Начать сначала</button>
-      <button type="button" id="playLead">Проиграть заявку</button>
-    </div>
-    <div class="statecard">
-      <div class="k">Состояние</div>
-      <div class="v" id="stateKey">CommandStart</div>
-      <p id="stateNote">Точка входа: команда /start. Бот отвечает приветствием и главным меню.</p>
+      <button type="button" id="playBook">Проиграть запись</button>
     </div>
   </div>
-
 </div>
 
+<section class="block" id="slots">
+  <div class="sec-head">
+    <h2 class="sec">Почему «свободно в 15:00» — это не так просто</h2>
+    <p class="sec-lead">Наивный бот показывает все получасовые интервалы подряд. Наш считает, влезает ли услуга целиком: окрашивание на два с половиной часа закрывает пять соседних слотов и не может начаться в 18:30, потому что салон работает до 20:00. Выберите услугу и кликните свободное время — увидите, как схлопывается сетка.</p>
+  </div>
+  <div class="panel">
+    <div class="panel-head"><h3>Свободное время</h3><span class="hint" id="tlday"></span></div>
+    <div class="slotbar" id="slotbar"></div>
+    <div class="slotbar daybar" id="daybar"></div>
+    <div class="timeline"><div class="tl-grid" id="tlgrid"></div></div>
+    <div class="tl-legend">
+      <span><i></i>свободно</span>
+      <span><i class="p"></i>займёт выбранная услуга</span>
+      <span><i class="b"></i>уже занято</span>
+    </div>
+    <p class="tl-note" id="tlnote"></p>
+  </div>
+</section>
+
+<section class="block" id="admin">
+  <div class="sec-head">
+    <h2 class="sec">Панель администратора — в самом боте</h2>
+    <p class="sec-lead">Владельцу не нужна отдельная админка в браузере: расписание на сегодня, выручка, конверсия и топ услуг приходят командой <code>/admin</code> прямо в Telegram. Цифры ниже живые — они меняются, когда вы записываетесь выше.</p>
+  </div>
+  <div class="dash" id="kpis"></div>
+  <div class="dash2">
+    <div class="panel">
+      <div class="panel-head"><h3>Записи на сегодня</h3><span class="hint" id="todayCount"></span></div>
+      <div class="today" id="today"></div>
+    </div>
+    <div class="panel">
+      <div class="panel-head"><h3>Топ услуг за 30 дней</h3></div>
+      <div class="tops" id="tops"></div>
+    </div>
+  </div>
+</section>
+
 <section class="block" id="inside">
-  <h2 class="sec">Что внутри</h2>
-  <p class="sec-lead">Бот сделан так, чтобы заказчик мог менять содержимое сам, а разработчик подключался только к логике.</p>
+  <div class="sec-head">
+    <h2 class="sec">Что внутри</h2>
+    <p class="sec-lead">Продукт, а не набор кнопок: данные в базе, защита от гонок, фоновые напоминания и работа под нагрузкой чата.</p>
+  </div>
   <div class="grid3">
     <div class="f">
-      <h3>FAQ правит заказчик</h3>
-      <p>Вопросы и ответы лежат в <code>data/faq.json</code>. Добавить пункт — значит дописать две строки в файл: кнопки в меню и обработчик ответа строятся из него автоматически.</p>
+      <h3>Два клиента, один слот</h3>
+      <p>Если двое подтверждают одно время одновременно, второму не достаётся «дубль»: в базе стоит частичный уникальный индекс на активные записи, и бот честно говорит, что время только что заняли, возвращая к выбору.</p>
     </div>
     <div class="f">
-      <h3>Заявки сохраняются</h3>
-      <p>Пошаговый диалог собирает имя и вопрос, показывает их на проверку и после подтверждения дописывает заявку в <code>data/leads.json</code> вместе с логином и временем.</p>
+      <h3>Напоминания без дублей</h3>
+      <p>Планировщик раз в пять минут находит визиты через сутки и через два часа и отмечает отправленное флагом — перезапуск бота не приводит к двойным сообщениям клиенту.</p>
     </div>
     <div class="f">
-      <h3>Курсы через провайдер</h3>
-      <p>Источник курсов выбирается переменной <code>RATE_PROVIDER</code>: демо-значения без сети или реальный API. Интерфейс один, поэтому подменить источник — одна строка в конфиге.</p>
+      <h3>Отмена по правилам</h3>
+      <p>Клиент отменяет визит сам, но не позже чем за <code>CANCEL_DEADLINE_HOURS</code> часов. Позже — бот объясняет правило и предлагает связаться, а слот не освобождается втихую.</p>
     </div>
     <div class="f">
-      <h3>Токен только из окружения</h3>
-      <p>Ключ бота читается из <code>BOT_TOKEN</code>, в репозитории лежит лишь <code>.env.example</code>. В коде токена нет ни в одном коммите.</p>
+      <h3>Рассылка, которая не банит бота</h3>
+      <p>Сообщения уходят с паузой между отправками, заблокировавшие бота помечаются в базе и исключаются из следующих рассылок. В отчёте — доставлено, заблокировано, ошибки.</p>
     </div>
     <div class="f">
-      <h3>Тесты без сети и токена</h3>
-      <p>11 тестов на <code>pytest</code> проверяют меню, ответы FAQ, весь сценарий заявки с отменой и разбор ответа курсов — не обращаясь ни к Telegram, ни к внешнему API.</p>
+      <h3>Прайс правит владелец</h3>
+      <p>Услуги, цены и длительности живут в базе: включить, выключить или переоценить услугу можно из админки в боте, не трогая код и не дёргая разработчика.</p>
     </div>
     <div class="f">
-      <h3>Меняется под заказчика</h3>
-      <p>Разделы меню, тексты и прайс — обычные константы и файлы данных. Под конкретный бизнес меняется содержимое, а не архитектура диалога.</p>
+      <h3>Защита от флуда</h3>
+      <p>Middleware пропускает не чаще одного действия в <code>THROTTLE_SECONDS</code> от пользователя, поэтому «дребезг» по кнопкам не превращается в шквал запросов к базе.</p>
     </div>
   </div>
 </section>
 
 <section class="block" id="start">
-  <h2 class="sec">Запуск</h2>
-  <p class="sec-lead">Нужен только Python и токен от <span class="mono">@BotFather</span>.</p>
+  <div class="sec-head">
+    <h2 class="sec">Стек и запуск</h2>
+    <p class="sec-lead">aiogram 3, SQLAlchemy 2 с SQLite, APScheduler, Docker. Тесты не требуют ни сети, ни токена.</p>
+  </div>
   <pre><b>git clone https://github.com/Olegg000/python-faq-bot</b>
 cd python-faq-bot
+cp .env.example .env          <span style="color:#66747f"># BOT_TOKEN, ADMIN_IDS, MANAGER_CHAT_ID</span>
+<b>docker compose up -d --build</b>
+
+<span style="color:#66747f"># или без докера</span>
 python3 -m venv venv &amp;&amp; source venv/bin/activate
 pip install -r requirements.txt
-cp .env.example .env        <span style="color:#66747f"># вписать BOT_TOKEN</span>
 <b>python -m bot</b>
 
-<span style="color:#66747f"># тесты — без токена и без сети</span>
+<span style="color:#66747f"># 109 тестов, без сети и токена</span>
 <b>pytest</b></pre>
 </section>
 
@@ -261,291 +321,438 @@ cp .env.example .env        <span style="color:#66747f"># вписать BOT_TOK
 
 <footer><div class="wrap">
   Витрина проекта студии <a href="https://olegg000.github.io/lendvis/">Лендвис</a> · исходники на <a href="https://github.com/Olegg000/python-faq-bot">GitHub</a><br>
-  Диалог на этой странице повторяет логику и тексты бота: это демонстрация сценария, а не подключение к Telegram.
+  Страница повторяет логику бота — тексты, прайс и расчёт слотов взяты из кода, — но к Telegram не подключается: это имитация сценария, а не работающий бот в браузере.
 </div></footer>
 
 <script>
 (function () {
   "use strict";
 
-  /* Данные взяты один в один из bot/handlers.py, data/faq.json и bot/rates.py */
+  /* ---- данные из проекта: bot/seed.py, bot/config.py, bot/handlers ---- */
+  var SERVICES = [
+    { id: 1, title: "Стрижка мужская",       dur: 45,  price: 1200 },
+    { id: 2, title: "Стрижка женская",       dur: 90,  price: 2500 },
+    { id: 3, title: "Окрашивание",           dur: 150, price: 5000 },
+    { id: 4, title: "Укладка",               dur: 60,  price: 1500 },
+    { id: 5, title: "Моделирование бороды",  dur: 30,  price: 800  }
+  ];
+  var WORK_START = 10 * 60, WORK_END = 20 * 60, STEP = 30, DAYS_AHEAD = 7, CANCEL_H = 3;
   var FAQ = [
     { q: "Как оформить заказ?",     a: "Нажмите «Задать вопрос» в меню бота или позвоните по телефону +7 (900) 000-00-00. Менеджер свяжется с вами в течение часа в рабочее время." },
     { q: "Какие способы оплаты?",   a: "Принимаем оплату картой, по СБП и безналичным расчётом для юридических лиц. Оплата производится после согласования заказа." },
     { q: "Какие сроки выполнения?", a: "Стандартный срок — 3–5 рабочих дней. Срочные заказы обсуждаются индивидуально с менеджером." },
     { q: "Есть ли доставка?",       a: "Да. По городу доставка бесплатна при заказе от 3000 ₽, по России отправляем транспортными компаниями." }
   ];
-  var PRICES = "Наши цены:\n\n• Базовый пакет — от 5 000 ₽\n• Стандарт — от 12 000 ₽\n• Премиум — от 25 000 ₽\n\nТочная стоимость зависит от задачи — нажмите «Задать вопрос», и мы посчитаем.";
-  var RATES = "Курсы валют к рублю:\n\nUSD: 92.50 ₽\nEUR: 100.20 ₽\nCNY: 12.70 ₽";
-  var MENU_KB = [
-    { t: "❓ FAQ", go: "faq" },
-    { t: "💰 Цены", go: "prices" },
-    { t: "✉️ Задать вопрос", go: "askName" },
-    { t: "💱 Курс валют", go: "rates" }
-  ];
-  var BACK_KB = [{ t: "⬅️ В меню", go: "menu" }];
+  var MONTHS_GEN = ["января","февраля","марта","апреля","мая","июня","июля","августа","сентября","октября","ноября","декабря"];
+  var MONTHS_SHORT = ["янв.","фев.","мар.","апр.","мая","июн.","июл.","авг.","сент.","окт.","нояб.","дек."];
+  var WEEKDAYS = ["Вс","Пн","Вт","Ср","Чт","Пт","Сб"];
 
-  /* Узлы схемы: id, подпись, техническое имя, координаты */
-  var N = {
-    start:     { x: 40,  y: 24,  w: 200, h: 50, t: "/start",            s: "CommandStart",       note: "Точка входа: команда /start. Бот отвечает приветствием и главным меню." },
-    menu:      { x: 40,  y: 116, w: 200, h: 50, t: "Главное меню",      s: "menu:main",          note: "Четыре кнопки меню. Все ветки диалога возвращаются сюда." },
-    faq:       { x: 24,  y: 232, w: 176, h: 50, t: "Список вопросов",   s: "menu:faq",           note: "Кнопки строятся из data/faq.json: сколько пунктов в файле, столько кнопок." },
-    faqAns:    { x: 24,  y: 322, w: 176, h: 50, t: "Ответ на вопрос",   s: "faq:{i}",            note: "Ответ подставляется из того же файла. Кнопки: назад к вопросам или в меню." },
-    prices:    { x: 232, y: 232, w: 160, h: 50, t: "Цены",              s: "menu:prices",        note: "Статичный прайс из константы PRICES_TEXT с кнопкой возврата." },
-    rates:     { x: 232, y: 322, w: 160, h: 50, t: "Курс валют",        s: "menu:rates",         note: "Курсы отдаёт провайдер, выбранный переменной RATE_PROVIDER: демо или реальный API." },
-    askName:   { x: 448, y: 116, w: 216, h: 50, t: "Спросить имя",      s: "AskQuestion.name",   note: "Начало сценария заявки. Бот переходит в состояние ожидания имени." },
-    askQ:      { x: 448, y: 216, w: 216, h: 50, t: "Спросить вопрос",   s: "AskQuestion.question", note: "Имя сохранено в память диалога, бот ждёт текст вопроса." },
-    askConf:   { x: 448, y: 316, w: 216, h: 50, t: "Проверка заявки",   s: "AskQuestion.confirm", note: "Бот показывает собранную заявку и ждёт подтверждения или отмены." },
-    saved:     { x: 470, y: 436, w: 194, h: 50, t: "Заявка принята",    s: "ask:confirm",        note: "Заявка дописывается в data/leads.json: имя, вопрос, логин и время.", term: true },
-    cancelled: { x: 250, y: 436, w: 178, h: 50, t: "Заявка отменена",   s: "ask:cancel",         note: "Память диалога очищается, бот возвращает главное меню." }
-  };
+  var svcById = {};
+  SERVICES.forEach(function (s) { svcById[s.id] = s; });
 
-  /* Рёбра: откуда, куда, тип, подпись */
-  var E = [
-    ["start", "menu", "f", ""],
-    ["menu", "faq", "f", ""],
-    ["menu", "prices", "f", ""],
-    ["menu", "rates", "f", ""],
-    ["menu", "askName", "f", "✉️"],
-    ["faq", "faqAns", "f", ""],
-    ["askName", "askQ", "f", "имя"],
-    ["askQ", "askConf", "f", "вопрос"],
-    ["askConf", "saved", "f", "✅"],
-    ["askConf", "cancelled", "f", "❌"],
-    ["faqAns", "menu", "b", ""],
-    ["prices", "menu", "b", ""],
-    ["rates", "menu", "b", ""],
-    ["saved", "menu", "b", ""],
-    ["cancelled", "menu", "b", ""]
-  ];
+  /* ---- состояние салона: общее для телефона, таймлайна и админки ---- */
+  var NOW = new Date();
+  function dayStart(d) { return new Date(d.getFullYear(), d.getMonth(), d.getDate()); }
+  function atMin(day, min) { return new Date(day.getFullYear(), day.getMonth(), day.getDate(), Math.floor(min / 60), min % 60); }
+  function sameDay(a, b) { return a.toDateString() === b.toDateString(); }
 
-  /* Путь от старта до узла — для подсветки */
-  var PATH = {
-    start: ["start"],
-    menu: ["start", "menu"],
-    faq: ["start", "menu", "faq"],
-    faqAns: ["start", "menu", "faq", "faqAns"],
-    prices: ["start", "menu", "prices"],
-    rates: ["start", "menu", "rates"],
-    askName: ["start", "menu", "askName"],
-    askQ: ["start", "menu", "askName", "askQ"],
-    askConf: ["start", "menu", "askName", "askQ", "askConf"],
-    saved: ["start", "menu", "askName", "askQ", "askConf", "saved"],
-    cancelled: ["start", "menu", "askName", "askQ", "askConf", "cancelled"]
-  };
+  /* Заполняем прошлые 30 дней правдоподобной историей — она даёт цифры админке.
+     Генератор детерминированный, чтобы страница выглядела одинаково при перезагрузке. */
+  var seed = 20260902;
+  function rnd() { seed = (seed * 1103515245 + 12345) % 2147483648; return seed / 2147483648; }
 
-  var svgNS = "http://www.w3.org/2000/svg";
-  var gEdges = document.getElementById("edges");
-  var gNodes = document.getElementById("nodes");
-
-  function cx(n) { return n.x + n.w / 2; }
-  function el(name, attrs) {
-    var e = document.createElementNS(svgNS, name);
-    for (var k in attrs) e.setAttribute(k, attrs[k]);
-    return e;
-  }
-
-  /* Ортогональный путь между узлами: вниз, вбок, вниз */
-  function edgePath(a, b) {
-    var ax = cx(a), ay = a.y + a.h, bx = cx(b), by = b.y;
-    if (b.y < a.y) {                       // возврат наверх — огибаем слева
-      var lx = 12;
-      return "M" + a.x + " " + (a.y + a.h / 2) + " H" + lx + " V" + (b.y + b.h / 2) + " H" + b.x;
+  var bookings = [];
+  var bid = 1;
+  var CLIENTS = ["Мария К.", "Ирина П.", "Ольга С.", "Анна В.", "Дарья Л.", "Егор М.", "Пётр Н.", "Артём Б."];
+  (function seedHistory() {
+    for (var back = 30; back >= 1; back--) {
+      var day = new Date(NOW.getFullYear(), NOW.getMonth(), NOW.getDate() - back);
+      var wd = day.getDay();
+      var count = wd === 0 ? 0 : (wd === 6 ? 3 : 1 + Math.floor(rnd() * 3));
+      var used = [];
+      for (var i = 0; i < count; i++) {
+        var svc = SERVICES[Math.floor(rnd() * SERVICES.length)];
+        var min = WORK_START + Math.floor(rnd() * ((WORK_END - WORK_START - svc.dur) / STEP)) * STEP;
+        var clash = used.some(function (u) { return min < u.e && u.s < min + svc.dur; });
+        if (clash) continue;
+        used.push({ s: min, e: min + svc.dur });
+        bookings.push({ id: bid++, svc: svc.id, start: atMin(day, min),
+                        who: CLIENTS[Math.floor(rnd() * CLIENTS.length)], mine: false, status: "active" });
+      }
     }
-    if (Math.abs(ax - bx) < 2) return "M" + ax + " " + ay + " V" + by;
-    var midY = ay + (by - ay) / 2;
-    return "M" + ax + " " + ay + " V" + midY + " H" + bx + " V" + by;
+    /* Несколько занятых слотов сегодня и завтра — чтобы сетка не была пустой */
+    var today = dayStart(NOW);
+    [[600, 1], [750, 4], [960, 2]].forEach(function (p) {
+      bookings.push({ id: bid++, svc: p[1], start: atMin(today, p[0]),
+                      who: CLIENTS[Math.floor(rnd() * CLIENTS.length)], mine: false, status: "active" });
+    });
+    var tomorrow = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1);
+    [[660, 3], [900, 5]].forEach(function (p) {
+      bookings.push({ id: bid++, svc: p[1], start: atMin(tomorrow, p[0]),
+                      who: CLIENTS[Math.floor(rnd() * CLIENTS.length)], mine: false, status: "active" });
+    });
+  })();
+
+  function active() { return bookings.filter(function (b) { return b.status === "active"; }); }
+
+  /* Порт repo.free_slots: слот годен, если услуга влезает до конца смены
+     и не пересекается ни с одной активной записью с учётом ЕЁ длительности. */
+  function freeSlots(service, day) {
+    var out = [];
+    for (var min = WORK_START; min + service.dur <= WORK_END; min += STEP) {
+      var start = atMin(day, min);
+      if (start <= NOW) continue;
+      var end = new Date(start.getTime() + service.dur * 60000);
+      var busy = active().some(function (b) {
+        var bs = b.start, be = new Date(bs.getTime() + svcById[b.svc].dur * 60000);
+        return start < be && bs < end;
+      });
+      if (!busy) out.push(start);
+    }
+    return out;
   }
+
+  function daysWithSlots(service) {
+    var res = [];
+    for (var i = 0; i < DAYS_AHEAD; i++) {
+      var d = new Date(NOW.getFullYear(), NOW.getMonth(), NOW.getDate() + i);
+      if (freeSlots(service, d).length) res.push(d);
+    }
+    return res;
+  }
+
+  function money(v) { return String(v).replace(/\B(?=(\d{3})+(?!\d))/g, " ") + " ₽"; }
+  function durLabel(m) {
+    if (m < 60) return m + " мин";
+    var h = Math.floor(m / 60), r = m % 60;
+    var word = h === 1 ? "час" : (h < 5 ? "часа" : "часов");
+    return h + " " + word + (r ? " " + r + " мин" : "");
+  }
+  function hhmm(d) { return String(d.getHours()).padStart(2, "0") + ":" + String(d.getMinutes()).padStart(2, "0"); }
+  function fullDate(d) { return d.getDate() + " " + MONTHS_GEN[d.getMonth()]; }
+  function dayLabel(d) {
+    if (sameDay(d, NOW)) return "Сегодня";
+    var t = new Date(NOW.getFullYear(), NOW.getMonth(), NOW.getDate() + 1);
+    if (sameDay(d, t)) return "Завтра";
+    return WEEKDAYS[d.getDay()] + ", " + d.getDate() + " " + MONTHS_SHORT[d.getMonth()];
+  }
+
+  /* ---------------- карта диалога ---------------- */
+  var LANES = ["Информация", "Заявка", "Запись", "Админка"];
+  var N = {
+    start:   { lane: 0, row: 0, t: "/start",           s: "CommandStart",  note: "Точка входа: бот здоровается, сохраняет клиента и показывает меню." },
+    menu:    { lane: 0, row: 1, t: "Главное меню",     s: "menu:main",     note: "Шесть кнопок. Запись стоит первой — это главное действие бота." },
+    faq:     { lane: 0, row: 2, t: "Вопросы",          s: "menu:faq",      note: "Кнопки строятся из data/faq.json: сколько пунктов в файле, столько кнопок." },
+    faqAns:  { lane: 0, row: 3, t: "Ответ",            s: "faq:{i}",       note: "Ответ берётся из того же файла — правит владелец, не программист." },
+    prices:  { lane: 0, row: 4, t: "Цены",             s: "menu:prices",   note: "Прайс из константы, с кнопкой возврата в меню." },
+    rates:   { lane: 0, row: 5, t: "Курс валют",       s: "menu:rates",    note: "Курсы отдаёт провайдер: демо-значения или реальный API — переключается конфигом." },
+
+    askName: { lane: 1, row: 1, t: "Спросить имя",     s: "AskQuestion.name",     note: "Начало заявки: бот ждёт имя." },
+    askQ:    { lane: 1, row: 2, t: "Спросить вопрос",  s: "AskQuestion.question", note: "Имя в памяти диалога, бот ждёт текст вопроса." },
+    askConf: { lane: 1, row: 3, t: "Проверка заявки",  s: "AskQuestion.confirm",  note: "Бот показывает собранное и ждёт подтверждения." },
+    lead:    { lane: 1, row: 4, t: "Заявка принята",   s: "ask:confirm",   note: "Заявка ложится в базу, менеджеру уходит уведомление.", term: true },
+
+    bkSvc:   { lane: 2, row: 1, t: "Выбор услуги",     s: "menu:book",     note: "Активные услуги прайса: название, длительность, цена." },
+    bkDay:   { lane: 2, row: 2, t: "Выбор дня",        s: "book:svc",      note: "Показываются только дни, где для этой услуги есть хотя бы один свободный слот." },
+    bkSlot:  { lane: 2, row: 3, t: "Выбор времени",    s: "book:day",      note: "Сетка свободных слотов: услуга должна целиком влезть до конца смены." },
+    bkConf:  { lane: 2, row: 4, t: "Проверка записи",  s: "book:slot",     note: "Карточка визита: услуга, дата, время, длительность и цена." },
+    booked:  { lane: 2, row: 5, t: "Вы записаны",      s: "book:ok",       note: "Запись создана, менеджер уведомлён, напоминания поставлены в очередь.", term: true },
+    myBk:    { lane: 2, row: 6, t: "Мои записи",       s: "menu:mybookings", note: "Будущие визиты клиента с кнопкой отмены у каждого." },
+    bkCancel:{ lane: 2, row: 7, t: "Отмена визита",    s: "book:cancel",   note: "Отменить можно не позже чем за " + CANCEL_H + " часа до визита — иначе бот объяснит правило." },
+
+    admin:   { lane: 3, row: 1, t: "/admin",           s: "AdminOnly",     note: "Доступ только для ADMIN_IDS: посторонний получает вежливый отказ." },
+    adToday: { lane: 3, row: 2, t: "Записи на сегодня",s: "admin:today",   note: "Расписание дня: время, услуга и клиент." },
+    adStats: { lane: 3, row: 3, t: "Статистика",       s: "admin:stats",   note: "Записи, выручка, новые клиенты, топ услуг и конверсия за 30 дней." },
+    adSrv:   { lane: 3, row: 4, t: "Услуги",           s: "admin:services",note: "Включение и выключение услуг прямо из бота." },
+    adCast:  { lane: 3, row: 5, t: "Рассылка",         s: "admin:broadcast", note: "Текст, предпросмотр с числом получателей, отправка с паузами и отчёт." }
+  };
+  var E = [
+    ["start","menu"],["menu","faq"],["faq","faqAns"],["menu","prices"],["menu","rates"],
+    ["menu","askName"],["askName","askQ"],["askQ","askConf"],["askConf","lead"],
+    ["menu","bkSvc"],["bkSvc","bkDay"],["bkDay","bkSlot"],["bkSlot","bkConf"],["bkConf","booked"],
+    ["menu","myBk"],["myBk","bkCancel"],
+    ["admin","adToday"],["admin","adStats"],["admin","adSrv"],["admin","adCast"]
+  ];
+  var PATH = {
+    start:["start"], menu:["start","menu"], faq:["start","menu","faq"], faqAns:["start","menu","faq","faqAns"],
+    prices:["start","menu","prices"], rates:["start","menu","rates"],
+    askName:["start","menu","askName"], askQ:["start","menu","askName","askQ"],
+    askConf:["start","menu","askName","askQ","askConf"], lead:["start","menu","askName","askQ","askConf","lead"],
+    bkSvc:["start","menu","bkSvc"], bkDay:["start","menu","bkSvc","bkDay"], bkSlot:["start","menu","bkSvc","bkDay","bkSlot"],
+    bkConf:["start","menu","bkSvc","bkDay","bkSlot","bkConf"], booked:["start","menu","bkSvc","bkDay","bkSlot","bkConf","booked"],
+    myBk:["start","menu","myBk"], bkCancel:["start","menu","myBk","bkCancel"],
+    admin:["admin"], adToday:["admin","adToday"], adStats:["admin","adStats"], adSrv:["admin","adSrv"], adCast:["admin","adCast"]
+  };
+
+  var NW = 206, NH = 52, LANE_W = 236, ROW_H = 84, PAD_TOP = 34;
+  var svgNS = "http://www.w3.org/2000/svg";
+  var svg = document.getElementById("graph");
+  function pos(n) { return { x: n.lane * LANE_W + 12, y: n.row * ROW_H + PAD_TOP }; }
+  function el(name, attrs) { var e = document.createElementNS(svgNS, name); for (var k in attrs) e.setAttribute(k, attrs[k]); return e; }
+
+  var maxRow = 0;
+  Object.keys(N).forEach(function (k) { maxRow = Math.max(maxRow, N[k].row); });
+  svg.setAttribute("viewBox", "0 0 " + (LANES.length * LANE_W + 12) + " " + ((maxRow + 1) * ROW_H + PAD_TOP + 12));
+
+  var gEdges = el("g", {}), gNodes = el("g", {});
+  svg.appendChild(gEdges); svg.appendChild(gNodes);
+
+  LANES.forEach(function (name, i) {
+    var t = el("text", { x: i * LANE_W + 12, y: 18, class: "lane-label" });
+    t.textContent = name;
+    svg.appendChild(t);
+  });
 
   var edgeEls = {};
   E.forEach(function (e) {
-    var a = N[e[0]], b = N[e[1]];
-    var p = el("path", { d: edgePath(a, b), class: "edge" + (e[2] === "b" ? " back" : "") });
+    var a = pos(N[e[0]]), b = pos(N[e[1]]);
+    var ax = a.x + NW / 2, ay = a.y + NH, bx = b.x + NW / 2, by = b.y, d;
+    if (Math.abs(ax - bx) < 2) { d = "M" + ax + " " + ay + " V" + by; }
+    else { var m = ay + (by - ay) / 2; d = "M" + ax + " " + ay + " V" + m + " H" + bx + " V" + by; }
+    var p = el("path", { d: d, class: "edge" });
     gEdges.appendChild(p);
     edgeEls[e[0] + ">" + e[1]] = p;
-    if (e[3]) {
-      var lx = cx(a) < cx(b) ? (cx(a) + cx(b)) / 2 : cx(b) + 6;
-      var ly = a.y + a.h + (b.y - a.y - a.h) / 2 - 5;
-      var tx = el("text", { x: lx, y: ly, class: "elabel", "text-anchor": "middle" });
-      tx.textContent = e[3];
-      gEdges.appendChild(tx);
-      edgeEls[e[0] + ">" + e[1] + ":label"] = tx;
-    }
   });
 
   var nodeEls = {};
   Object.keys(N).forEach(function (id) {
-    var n = N[id];
-    var g = el("g", { class: "node" + (n.term ? " term" : ""), tabindex: "0", role: "button",
-                      "aria-label": n.t + ", состояние " + n.s });
-    g.appendChild(el("rect", { x: n.x, y: n.y, width: n.w, height: n.h, rx: 9 }));
-    var t1 = el("text", { x: n.x + 14, y: n.y + 22, class: "t" });
-    t1.textContent = n.t;
-    var t2 = el("text", { x: n.x + 14, y: n.y + 38, class: "s" });
-    t2.textContent = n.s;
+    var n = N[id], p = pos(n);
+    var g = el("g", { class: "node" + (n.term ? " term" : ""), tabindex: "0", role: "button", "aria-label": n.t + ", состояние " + n.s });
+    g.appendChild(el("rect", { x: p.x, y: p.y, width: NW, height: NH, rx: 9 }));
+    var t1 = el("text", { x: p.x + 13, y: p.y + 22, class: "t" }); t1.textContent = n.t;
+    var t2 = el("text", { x: p.x + 13, y: p.y + 38, class: "s" }); t2.textContent = n.s;
     g.appendChild(t1); g.appendChild(t2);
     g.addEventListener("click", function () { goto(id, true); });
-    g.addEventListener("keydown", function (ev) {
-      if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); goto(id, true); }
-    });
+    g.addEventListener("keydown", function (ev) { if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); goto(id, true); } });
     gNodes.appendChild(g);
     nodeEls[id] = g;
   });
 
-  /* Телефон */
+  /* ---------------- телефон ---------------- */
   var chat = document.getElementById("chat");
   var compose = document.getElementById("compose");
   var input = document.getElementById("input");
   var botState = document.getElementById("botState");
-  var stateKey = document.getElementById("stateKey");
-  var stateNote = document.getElementById("stateNote");
-
+  var current = "start", lastBot = null, timers = [];
+  var pick = { svc: null, day: null, slot: null };
   var lead = { name: "", question: "" };
-  var current = "start";
-  var lastBotBubble = null;   // для имитации edit_text
-  var timers = [];
 
   function clearTimers() { timers.forEach(clearTimeout); timers = []; }
-
-  function bubble(text, mine, edited) {
+  function bubble(text, mine) {
     var d = document.createElement("div");
     d.className = "msg " + (mine ? "me" : "bot");
     d.textContent = text;
-    if (edited) {
-      var s = document.createElement("span");
-      s.className = "ed";
-      s.textContent = "изменено";
-      d.appendChild(s);
-    }
-    chat.appendChild(d);
-    chat.scrollTop = chat.scrollHeight;
+    chat.appendChild(d); chat.scrollTop = chat.scrollHeight;
     return d;
   }
-
+  function dropKb() { Array.prototype.slice.call(chat.querySelectorAll(".kb")).forEach(function (k) { k.remove(); }); }
   function keyboard(rows) {
-    var k = document.createElement("div");
-    k.className = "kb";
+    var k = document.createElement("div"); k.className = "kb";
     rows.forEach(function (b) {
       var btn = document.createElement("button");
-      btn.type = "button";
-      btn.textContent = b.t;
-      btn.addEventListener("click", function () { press(b); });
+      btn.type = "button"; btn.textContent = b.t;
+      if (b.third) btn.className = "third";
+      btn.addEventListener("click", b.fn);
       k.appendChild(btn);
     });
-    chat.appendChild(k);
-    chat.scrollTop = chat.scrollHeight;
-    return k;
+    chat.appendChild(k); chat.scrollTop = chat.scrollHeight;
   }
-
-  function dropKeyboards() {
-    Array.prototype.slice.call(chat.querySelectorAll(".kb")).forEach(function (k) { k.remove(); });
-  }
-
-  /* Реальный бот на callback-кнопках редактирует то же сообщение (edit_text),
-     а в шагах заявки отправляет новое (answer) — здесь так же. */
+  /* Реальный бот на кнопках правит то же сообщение (edit_text) — здесь так же */
   function say(text, rows, edit) {
-    dropKeyboards();
-    if (edit && lastBotBubble) {
-      lastBotBubble.textContent = text;
-      var s = document.createElement("span");
-      s.className = "ed";
-      s.textContent = "изменено";
-      lastBotBubble.appendChild(s);
-    } else {
-      lastBotBubble = bubble(text, false, false);
-    }
+    dropKb();
+    if (edit && lastBot) {
+      lastBot.textContent = text;
+      var s = document.createElement("span"); s.className = "ed"; s.textContent = "изменено";
+      lastBot.appendChild(s);
+    } else { lastBot = bubble(text, false); }
     if (rows) keyboard(rows);
     chat.scrollTop = chat.scrollHeight;
   }
-
-  function press(b) {
-    if (b.go === "faqAns") { showFaq(b.i); return; }
-    goto(b.go, false);
-  }
-
-  function showFaq(i) {
-    current = "faqAns";
-    paint();
-    say(FAQ[i].a, [{ t: "⬅️ К вопросам", go: "faq" }, { t: "🏠 В меню", go: "menu" }], true);
-    setState("faqAns", "faq:" + i);
-  }
-
-  function setState(id, keyOverride) {
-    var n = N[id];
-    botState.textContent = keyOverride || n.s;
-    stateKey.textContent = keyOverride || n.s;
-    stateNote.textContent = n.note;
-  }
-
   function composeOn(on, ph) {
     compose.classList.toggle("off", !on);
     input.placeholder = ph || "Бот ждёт нажатия кнопки";
     input.value = "";
-    if (on) { try { input.focus({ preventScroll: true }); } catch (e) { input.focus(); } }
+    if (on) { try { input.focus({ preventScroll: true }); } catch (e) {} }
+  }
+  function setState(id, override) {
+    var n = N[id];
+    botState.textContent = override || (n ? n.s : id);
+  }
+  function backRow() { return { t: "⬅️ В меню", fn: function () { goto("menu", false); } }; }
+
+  function menuRows() {
+    return [
+      { t: "🗓 Записаться", fn: function () { goto("bkSvc", false); } },
+      { t: "📋 Мои записи", fn: function () { goto("myBk", false); } },
+      { t: "❓ FAQ", fn: function () { goto("faq", false); } },
+      { t: "💰 Цены", fn: function () { goto("prices", false); } },
+      { t: "✉️ Задать вопрос", fn: function () { goto("askName", false); } },
+      { t: "💱 Курс валют", fn: function () { goto("rates", false); } }
+    ];
   }
 
-  /* Переход в состояние. fromGraph = true → пересобираем чат с нуля по пути */
-  function goto(id, fromGraph) {
-    clearTimers();
-    current = id;
-    paint();
-    setState(id);
-
-    if (fromGraph) {
-      chat.innerHTML = "";
-      lastBotBubble = null;
-      rebuild(id);
-      return;
-    }
-    render(id, true);
-  }
-
-  /* Отрисовка одного состояния в текущий чат */
   function render(id, edit) {
     composeOn(false);
     if (id === "start") {
-      say("Здравствуйте! Я бот-помощник компании.\nОтвечу на частые вопросы, покажу цены и приму вашу заявку.", MENU_KB, false);
+      say("Здравствуйте! Я бот-помощник салона.\nЗапишу вас на услугу, отвечу на вопросы и приму заявку.", menuRows(), false);
     } else if (id === "menu") {
-      say("Главное меню:", MENU_KB, edit);
+      say("Главное меню:", menuRows(), edit);
     } else if (id === "faq") {
-      var rows = FAQ.map(function (f, i) { return { t: f.q, go: "faqAns", i: i }; });
-      rows.push({ t: "⬅️ В меню", go: "menu" });
+      var rows = FAQ.map(function (f, i) { return { t: f.q, fn: function () { showFaq(i); } }; });
+      rows.push(backRow());
       say("Частые вопросы:", rows, edit);
-    } else if (id === "faqAns") {
-      showFaq(0);
     } else if (id === "prices") {
-      say(PRICES, BACK_KB, edit);
+      var txt = "Наши услуги:\n\n" + SERVICES.map(function (s) {
+        return "• " + s.title + " — " + durLabel(s.dur) + ", " + money(s.price);
+      }).join("\n");
+      say(txt, [backRow()], edit);
     } else if (id === "rates") {
-      say(RATES, BACK_KB, edit);
+      say("Курсы валют к рублю:\n\nUSD: 92.50 ₽\nEUR: 100.20 ₽\nCNY: 12.70 ₽", [backRow()], edit);
     } else if (id === "askName") {
-      say("Как вас зовут?", null, edit);
-      composeOn(true, "Напишите имя…");
+      say("Как вас зовут?", null, edit); composeOn(true, "Напишите имя…");
     } else if (id === "askQ") {
-      say("Опишите ваш вопрос:", null, false);
-      composeOn(true, "Опишите вопрос…");
+      say("Опишите ваш вопрос:", null, false); composeOn(true, "Опишите вопрос…");
     } else if (id === "askConf") {
-      say("Проверьте заявку:\n\nИмя: " + (lead.name || "Олег") + "\nВопрос: " + (lead.question || "Нужен бот для приёма заявок"),
-          [{ t: "✅ Отправить", go: "saved" }, { t: "❌ Отмена", go: "cancelled" }], false);
-    } else if (id === "saved") {
-      say("Спасибо! Заявка принята, менеджер свяжется с вами.", MENU_KB, true);
-    } else if (id === "cancelled") {
-      say("Заявка отменена.", MENU_KB, true);
+      say("Проверьте заявку:\n\nИмя: " + (lead.name || "Мария") + "\nВопрос: " + (lead.question || "Есть ли окрашивание в выходные?"),
+        [{ t: "✅ Отправить", fn: function () { goto("lead", false); } },
+         { t: "❌ Отмена", fn: function () { goto("menu", false); } }], false);
+    } else if (id === "lead") {
+      say("Спасибо! Заявка принята, менеджер свяжется с вами.", menuRows(), true);
+    } else if (id === "bkSvc") {
+      var rows2 = SERVICES.map(function (s) {
+        return { t: s.title + " · " + durLabel(s.dur) + " · " + money(s.price), fn: function () { pick.svc = s; goto("bkDay", false); } };
+      });
+      rows2.push(backRow());
+      say("Выберите услугу:", rows2, edit);
+    } else if (id === "bkDay") {
+      if (!pick.svc) pick.svc = SERVICES[2];
+      var days = daysWithSlots(pick.svc);
+      if (!days.length) {
+        say("На ближайшие " + DAYS_AHEAD + " дн. свободного времени нет.\nОставьте заявку — подберём время вручную.",
+            [{ t: "✉️ Задать вопрос", fn: function () { goto("askName", false); } }, backRow()], edit);
+        return;
+      }
+      var rows3 = days.map(function (d) { return { t: dayLabel(d), fn: function () { pick.day = d; goto("bkSlot", false); } }; });
+      rows3.push({ t: "⬅️ К услугам", fn: function () { goto("bkSvc", false); } });
+      say(pick.svc.title + "\nВыберите день:", rows3, edit);
+    } else if (id === "bkSlot") {
+      if (!pick.day) pick.day = daysWithSlots(pick.svc)[0];
+      var slots = freeSlots(pick.svc, pick.day);
+      var rows4 = slots.slice(0, 12).map(function (t) {
+        return { t: hhmm(t), third: true, fn: function () { pick.slot = t; goto("bkConf", false); } };
+      });
+      rows4.push({ t: "⬅️ К выбору дня", fn: function () { goto("bkDay", false); } });
+      say(pick.svc.title + " · " + dayLabel(pick.day) + "\nСвободное время:", rows4, edit);
+    } else if (id === "bkConf") {
+      if (!pick.slot) pick.slot = freeSlots(pick.svc, pick.day)[0];
+      say("Проверьте запись:\n\nУслуга: " + pick.svc.title +
+          "\nДата: " + fullDate(pick.day) + "\nВремя: " + hhmm(pick.slot) +
+          "\nДлительность: " + durLabel(pick.svc.dur) + "\nСтоимость: " + money(pick.svc.price),
+        [{ t: "✅ Подтвердить", fn: function () { doBook(); } },
+         { t: "❌ Отмена", fn: function () { goto("bkSlot", false); } }], false);
+    } else if (id === "booked") {
+      say("✅ Вы записаны!\n\nУслуга: " + pick.svc.title +
+          "\nКогда: " + fullDate(pick.day) + " в " + hhmm(pick.slot) +
+          "\nСтоимость: " + money(pick.svc.price) +
+          "\n\nНапомним о визите заранее. Отменить можно в разделе «Мои записи».",
+        [{ t: "📋 Мои записи", fn: function () { goto("myBk", false); } }, backRow()], true);
+    } else if (id === "myBk") {
+      var mine = active().filter(function (b) { return b.mine && b.start > NOW; })
+                         .sort(function (a, b) { return a.start - b.start; });
+      if (!mine.length) {
+        say("У вас пока нет предстоящих записей.",
+          [{ t: "🗓 Записаться", fn: function () { goto("bkSvc", false); } }, backRow()], edit);
+        return;
+      }
+      var txt2 = "Ваши записи:\n\n" + mine.map(function (b) {
+        return "• " + svcById[b.svc].title + "\n  " + fullDate(b.start) + " в " + hhmm(b.start) + " · " + money(svcById[b.svc].price);
+      }).join("\n");
+      var rows5 = mine.map(function (b) {
+        return { t: "❌ Отменить " + hhmm(b.start), fn: function () { doCancel(b); } };
+      });
+      rows5.push(backRow());
+      say(txt2, rows5, edit);
+    } else if (id === "bkCancel") {
+      say("Отменить визит можно не позже чем за " + CANCEL_H + " часа до начала.\nСвяжитесь с администратором, если нужно перенести.",
+        [backRow()], true);
+    } else if (id === "admin") {
+      say("Панель администратора:", [
+        { t: "📅 Записи на сегодня", fn: function () { goto("adToday", false); } },
+        { t: "📊 Статистика", fn: function () { goto("adStats", false); } },
+        { t: "🧾 Услуги", fn: function () { goto("adSrv", false); } },
+        { t: "📣 Рассылка", fn: function () { goto("adCast", false); } }
+      ], edit);
+    } else if (id === "adToday") {
+      var td = todayList();
+      var t3 = td.length
+        ? "Записи на сегодня:\n\n" + td.map(function (b) { return hhmm(b.start) + " · " + svcById[b.svc].title + " · " + (b.mine ? "вы" : b.who); }).join("\n")
+        : "На сегодня записей нет.";
+      say(t3, [{ t: "⬅️ В панель", fn: function () { goto("admin", false); } }], edit);
+    } else if (id === "adStats") {
+      var st = stats();
+      say("Статистика за 30 дней:\n\nЗаписей: " + st.count + "\nВыручка: " + money(st.revenue) +
+          "\nНовых клиентов: " + st.clients + "\nКонверсия: " + st.conv + " %\n\nТоп услуг:\n" +
+          st.top.map(function (t, i) { return (i + 1) + ". " + t[0] + " — " + t[1]; }).join("\n"),
+        [{ t: "⬅️ В панель", fn: function () { goto("admin", false); } }], edit);
+    } else if (id === "adSrv") {
+      say("Услуги прайса:\n\n" + SERVICES.map(function (s) {
+        return "• " + s.title + " — " + money(s.price) + " · включена";
+      }).join("\n") + "\n\nЛюбую можно выключить кнопкой — из прайса она исчезнет сразу.",
+        [{ t: "⬅️ В панель", fn: function () { goto("admin", false); } }], edit);
+    } else if (id === "adCast") {
+      say("Рассылка по клиентам.\nПришлите текст сообщения — бот покажет предпросмотр и число получателей, а после подтверждения разошлёт с паузами.",
+        [{ t: "⬅️ В панель", fn: function () { goto("admin", false); } }], edit);
     }
   }
 
-  /* Сборка чата по пути от старта — когда кликнули узел на схеме */
-  function rebuild(id) {
-    var path = PATH[id] || ["start"];
-    if (!lead.name) { lead.name = "Олег"; lead.question = "Нужен бот для приёма заявок"; }
-    path.forEach(function (step, idx) {
-      var last = idx === path.length - 1;
-      if (step === "askQ" && path.indexOf("askName") >= 0) bubble(lead.name, true);
-      if (step === "askConf") bubble(lead.question, true);
-      render(step, idx > 0 && step !== "askQ" && step !== "askConf");
-      if (!last) dropKeyboards();
-    });
-    setState(id);
-    if (id !== "askName" && id !== "askQ") composeOn(false);
+  function showFaq(i) {
+    current = "faqAns"; paint(); setState("faqAns", "faq:" + i);
+    say(FAQ[i].a, [{ t: "⬅️ К вопросам", fn: function () { goto("faq", false); } }, backRow()], true);
+  }
+
+  function doBook() {
+    /* Слот мог занять другой клиент, пока открыта карточка — как в боте */
+    var stillFree = freeSlots(pick.svc, pick.day).some(function (t) { return t.getTime() === pick.slot.getTime(); });
+    if (!stillFree) {
+      current = "bkSlot"; paint(); setState("bkSlot");
+      say("Это время только что заняли.\n\n" + pick.svc.title + " · " + dayLabel(pick.day) + "\nСвободное время:", null, true);
+      render("bkSlot", false);
+      return;
+    }
+    bookings.push({ id: bid++, svc: pick.svc.id, start: pick.slot, who: "вы", mine: true, status: "active" });
+    refreshAll();
+    goto("booked", false);
+  }
+
+  function doCancel(b) {
+    var hoursLeft = (b.start - NOW) / 3600000;
+    if (hoursLeft < CANCEL_H) { goto("bkCancel", false); return; }
+    b.status = "cancelled";
+    refreshAll();
+    current = "myBk"; paint(); setState("myBk");
+    say("Запись отменена. Время снова свободно.", null, true);
+    render("myBk", false);
+  }
+
+  function goto(id, fromGraph) {
+    clearTimers();
+    current = id; paint(); setState(id);
+    if (fromGraph) {
+      chat.innerHTML = ""; lastBot = null;
+      var path = PATH[id] || ["start"];
+      if (!lead.name) { lead.name = "Мария"; lead.question = "Есть ли окрашивание в выходные?"; }
+      if (!pick.svc) pick.svc = SERVICES[2];
+      path.forEach(function (step, i) {
+        var last = i === path.length - 1;
+        if (step === "askQ") bubble(lead.name, true);
+        if (step === "askConf") bubble(lead.question, true);
+        render(step, i > 0 && step !== "askQ" && step !== "askConf");
+        if (!last) dropKb();
+      });
+      setState(id);
+      return;
+    }
+    render(id, true);
   }
 
   function paint() {
@@ -555,12 +762,9 @@ cp .env.example .env        <span style="color:#66747f"># вписать BOT_TOK
       nodeEls[id].classList.toggle("past", path.indexOf(id) >= 0 && id !== current);
     });
     Object.keys(edgeEls).forEach(function (k) {
-      if (k.indexOf(":label") > 0) return;
-      var parts = k.split(">");
-      var lit = path.indexOf(parts[0]) >= 0 && path.indexOf(parts[1]) === path.indexOf(parts[0]) + 1;
+      var p = k.split(">");
+      var lit = path.indexOf(p[0]) >= 0 && path.indexOf(p[1]) === path.indexOf(p[0]) + 1;
       edgeEls[k].classList.toggle("lit", lit);
-      var lab = edgeEls[k + ":label"];
-      if (lab) lab.classList.toggle("lit", lit);
     });
   }
 
@@ -568,45 +772,212 @@ cp .env.example .env        <span style="color:#66747f"># вписать BOT_TOK
     ev.preventDefault();
     var v = input.value.trim();
     if (!v) return;
-    bubble(v, true);
-    input.value = "";
-    if (current === "askName") {
-      lead.name = v;
-      goto("askQ", false);
-    } else if (current === "askQ") {
-      lead.question = v;
-      goto("askConf", false);
-    }
+    bubble(v, true); input.value = "";
+    if (current === "askName") { lead.name = v; goto("askQ", false); }
+    else if (current === "askQ") { lead.question = v; goto("askConf", false); }
   });
 
   document.getElementById("restart").addEventListener("click", function () {
-    clearTimers();
-    lead = { name: "", question: "" };
-    chat.innerHTML = "";
-    lastBotBubble = null;
-    current = "start";
+    clearTimers(); lead = { name: "", question: "" }; pick = { svc: null, day: null, slot: null };
+    chat.innerHTML = ""; lastBot = null; current = "start";
     paint(); setState("start"); render("start", false);
   });
 
-  /* Автопрогон сценария заявки — показывает шаги с паузами */
-  document.getElementById("playLead").addEventListener("click", function () {
+  document.getElementById("playBook").addEventListener("click", function () {
     clearTimers();
     var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    var gap = reduce ? 0 : 850;
-    lead = { name: "", question: "" };
-    chat.innerHTML = ""; lastBotBubble = null;
+    var gap = reduce ? 0 : 900;
+    chat.innerHTML = ""; lastBot = null; pick = { svc: null, day: null, slot: null };
     current = "start"; paint(); setState("start"); render("start", false);
     var steps = [
-      function () { goto("askName", false); },
-      function () { bubble("Олег", true); lead.name = "Олег"; goto("askQ", false); },
-      function () { bubble("Нужен бот для приёма заявок", true); lead.question = "Нужен бот для приёма заявок"; goto("askConf", false); },
-      function () { goto("saved", false); }
+      function () { goto("bkSvc", false); },
+      function () { pick.svc = SERVICES[2]; goto("bkDay", false); },
+      function () { pick.day = daysWithSlots(pick.svc)[0]; goto("bkSlot", false); },
+      function () { pick.slot = freeSlots(pick.svc, pick.day)[0]; goto("bkConf", false); },
+      function () { doBook(); }
     ];
     steps.forEach(function (fn, i) { timers.push(setTimeout(fn, gap * (i + 1))); });
   });
 
+  /* ---------------- таймлайн слотов ---------------- */
+  var tlSvc = SERVICES[2];
+  var tlDay = null;
+  var slotbar = document.getElementById("slotbar");
+  var daybar = document.getElementById("daybar");
+  var tlgrid = document.getElementById("tlgrid");
+  var tlnote = document.getElementById("tlnote");
+
+  SERVICES.forEach(function (s) {
+    var b = document.createElement("button");
+    b.type = "button";
+    b.innerHTML = s.title + '<span class="dur">' + durLabel(s.dur) + "</span>";
+    b.addEventListener("click", function () { tlSvc = s; drawTimeline(); });
+    b.dataset.id = s.id;
+    slotbar.appendChild(b);
+  });
+
+  /* Ближайшие дни для переключателя */
+  function nextDays(n) {
+    var out = [];
+    for (var i = 0; i < n; i++) out.push(new Date(NOW.getFullYear(), NOW.getMonth(), NOW.getDate() + i));
+    return out;
+  }
+
+  function drawDaybar(useDay) {
+    daybar.innerHTML = "";
+    nextDays(3).forEach(function (d) {
+      var n = freeSlots(tlSvc, d).length;
+      var b = document.createElement("button");
+      b.type = "button";
+      b.innerHTML = dayLabel(d) + '<span class="free">' + (n ? n + " своб." : "нет мест") + "</span>";
+      b.classList.toggle("on", sameDay(d, useDay));
+      b.addEventListener("click", function () { tlDay = d; drawTimeline(); });
+      daybar.appendChild(b);
+    });
+  }
+
+  function drawTimeline() {
+    Array.prototype.slice.call(slotbar.children).forEach(function (b) {
+      b.classList.toggle("on", Number(b.dataset.id) === tlSvc.id);
+    });
+    /* День по умолчанию — ближайший, где для услуги есть свободное время */
+    var useDay = tlDay;
+    if (!useDay || !freeSlots(tlSvc, useDay).length) {
+      var withSlots = nextDays(DAYS_AHEAD).filter(function (d) { return freeSlots(tlSvc, d).length; });
+      useDay = withSlots.length ? withSlots[0] : dayStart(NOW);
+      tlDay = useDay;
+    }
+    drawDaybar(useDay);
+    document.getElementById("tlday").textContent = dayLabel(useDay) + ", " + fullDate(useDay);
+    var free = freeSlots(tlSvc, useDay).map(function (d) { return d.getTime(); });
+    tlgrid.innerHTML = "";
+    var cells = [];
+    for (var min = WORK_START; min < WORK_END; min += STEP) {
+      var start = atMin(useDay, min);
+      var c = document.createElement("div");
+      c.className = "cell";
+      c.textContent = hhmm(start);
+      var busy = active().some(function (b) {
+        var bs = b.start, be = new Date(bs.getTime() + svcById[b.svc].dur * 60000);
+        return start < be && bs <= start;
+      });
+      var fits = min + tlSvc.dur <= WORK_END;
+      if (busy) { c.classList.add("busy"); c.title = "занято"; }
+      else if (start <= NOW) { c.classList.add("past"); c.title = "время прошло"; }
+      else if (!fits) { c.classList.add("nofit"); c.title = "услуга не успеет до конца смены"; }
+      else if (free.indexOf(start.getTime()) < 0) { c.classList.add("busy"); c.title = "пересекается с соседней записью"; }
+      else {
+        (function (st, cell) {
+          cell.addEventListener("mouseenter", function () { preview(st); });
+          cell.addEventListener("mouseleave", clearPreview);
+          cell.addEventListener("focus", function () { preview(st); });
+          cell.addEventListener("blur", clearPreview);
+          cell.addEventListener("click", function () {
+            bookings.push({ id: bid++, svc: tlSvc.id, start: st, who: "вы", mine: true, status: "active" });
+            refreshAll();
+          });
+          cell.tabIndex = 0;
+          cell.setAttribute("role", "button");
+          cell.setAttribute("aria-label", "Записаться на " + hhmm(st) + ", " + tlSvc.title);
+        })(start, c);
+      }
+      cells.push({ el: c, min: min });
+      tlgrid.appendChild(c);
+    }
+    tlgrid._cells = cells;
+
+    /* недоступно = занято + прошло + не влезает до конца смены */
+    var busyCount = cells.filter(function (c) {
+      return c.el.classList.contains("busy") || c.el.classList.contains("past") || c.el.classList.contains("nofit");
+    }).length;
+    var span = Math.ceil(tlSvc.dur / STEP);
+    tlnote.innerHTML = "<b>" + tlSvc.title + "</b> занимает " + durLabel(tlSvc.dur) +
+      " — это " + span + " " + (span === 1 ? "слот" : (span < 5 ? "слота" : "слотов")) +
+      " подряд, поэтому последнее возможное начало — " +
+      hhmm(atMin(useDay, WORK_END - tlSvc.dur)) + ". На выбранный день (" +
+      dayLabel(useDay).toLowerCase() + ") недоступно слотов: " + busyCount + " из " +
+      ((WORK_END - WORK_START) / STEP) + ".";
+  }
+
+  function preview(start) {
+    var cells = tlgrid._cells || [];
+    var end = start.getTime() + tlSvc.dur * 60000;
+    cells.forEach(function (c) {
+      var t = atMin(dayStart(start), c.min).getTime();
+      if (t >= start.getTime() && t < end) c.el.classList.add("pv");
+    });
+  }
+  function clearPreview() {
+    (tlgrid._cells || []).forEach(function (c) { c.el.classList.remove("pv"); });
+  }
+
+  /* ---------------- админка ---------------- */
+  function todayList() {
+    return active().filter(function (b) { return sameDay(b.start, NOW); })
+                   .sort(function (a, b) { return a.start - b.start; });
+  }
+  function stats() {
+    var from = new Date(NOW.getTime() - 30 * 86400000);
+    var list = active().filter(function (b) { return b.start >= from; });
+    var revenue = list.reduce(function (a, b) { return a + svcById[b.svc].price; }, 0);
+    var byName = {};
+    list.forEach(function (b) { var t = svcById[b.svc].title; byName[t] = (byName[t] || 0) + 1; });
+    var top = Object.keys(byName).map(function (k) { return [k, byName[k]]; })
+                    .sort(function (a, b) { return b[1] - a[1]; });
+    var clients = {};
+    list.forEach(function (b) { clients[b.who] = 1; });
+    var nClients = Object.keys(clients).length;
+    return { count: list.length, revenue: revenue, clients: nClients, top: top.slice(0, 3),
+             conv: nClients ? Math.round(list.length / nClients * 100) : 0, allTop: top };
+  }
+
+  function drawDash() {
+    var st = stats(), td = todayList();
+    var kpis = document.getElementById("kpis");
+    kpis.innerHTML = "";
+    [
+      { k: "Записей за 30 дней", v: st.count, cls: "acc", sub: "активные визиты в базе" },
+      { k: "Выручка", v: money(st.revenue), cls: "money", sub: "сумма по прайсу услуг" },
+      { k: "Клиентов", v: st.clients, cls: "", sub: "уникальных за период" },
+      { k: "Записей на сегодня", v: td.length, cls: "acc", sub: td.length ? "ближайшая в " + hhmm(td[0].start) : "день свободен" }
+    ].forEach(function (m) {
+      var d = document.createElement("div");
+      d.className = "kpi";
+      d.innerHTML = '<div class="k">' + m.k + '</div><div class="v ' + m.cls + '">' + m.v + '</div><div class="sub">' + m.sub + "</div>";
+      kpis.appendChild(d);
+    });
+
+    var t = document.getElementById("today");
+    document.getElementById("todayCount").textContent = td.length ? td.length + " визит(а)" : "";
+    if (!td.length) { t.innerHTML = '<div class="empty">На сегодня записей нет — бот покажет это владельцу той же фразой.</div>'; }
+    else {
+      var ul = document.createElement("ul");
+      td.forEach(function (b) {
+        var li = document.createElement("li");
+        li.innerHTML = '<span class="tm">' + hhmm(b.start) + '</span><span>' + svcById[b.svc].title +
+                       '</span><span class="who">' + (b.mine ? "вы" : b.who) + "</span>";
+        ul.appendChild(li);
+      });
+      t.innerHTML = ""; t.appendChild(ul);
+    }
+
+    var tops = document.getElementById("tops");
+    tops.innerHTML = "";
+    var max = st.allTop.length ? st.allTop[0][1] : 1;
+    st.allTop.slice(0, 5).forEach(function (row) {
+      var d = document.createElement("div");
+      d.className = "top-row";
+      d.innerHTML = "<span>" + row[0] + '</span><span class="bar"><i style="width:' +
+                    Math.round(row[1] / max * 100) + '%"></i></span><span class="n">' + row[1] + "</span>";
+      tops.appendChild(d);
+    });
+  }
+
+  function refreshAll() { drawTimeline(); drawDash(); }
+
   /* старт */
   paint(); setState("start"); render("start", false);
+  drawTimeline(); drawDash();
 })();
 </script>
 </body>
