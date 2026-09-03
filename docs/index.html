@@ -8,12 +8,12 @@
 <meta property="og:title" content="Бот записи клиентов · Лендвис">
 <meta property="og:description" content="Запишитесь прямо на странице: слоты считаются той же арифметикой, что в боте, а панель администратора пересчитывает выручку на глазах.">
 <meta property="og:type" content="website">
-<meta property="og:url" content="https://olegg000.github.io/python-faq-bot/">
-<meta property="og:image" content="https://olegg000.github.io/python-faq-bot/preview.png">
+<meta property="og:url" content="https://lendvis.ru/python-faq-bot/">
+<meta property="og:image" content="https://lendvis.ru/python-faq-bot/preview.png">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@600;700&family=Golos+Text:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Piazzolla:wght@800&family=Unbounded:wght@600;700&family=Golos+Text:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
 <style>
 :root{
   --bg:#0b0e12; --panel:#131920; --panel-2:#182029; --line:#242e39; --line-soft:#1c242d;
@@ -169,12 +169,12 @@ footer a{color:var(--ink-soft)}
 <body>
 
 <header class="top"><div class="wrap">
-  <a class="brand" href="https://olegg000.github.io/lendvis/">ЛЕНД<i>ВИС</i></a>
+  <a class="brand" href="https://lendvis.ru/" style="font-family:'Piazzolla',Georgia,serif;font-weight:800;letter-spacing:0">Лендвис</a>
   <nav>
     <a href="#slots">Слоты</a>
     <a href="#admin">Админка</a>
     <a href="#inside">Что внутри</a>
-    <a class="src" href="https://github.com/Olegg000/python-faq-bot">Исходники ↗</a>
+    <a class="src" href="https://github.com/lendvis/python-faq-bot">Исходники ↗</a>
   </nav>
 </div></header>
 
@@ -303,7 +303,7 @@ footer a{color:var(--ink-soft)}
     <h2 class="sec">Стек и запуск</h2>
     <p class="sec-lead">aiogram 3, SQLAlchemy 2 с SQLite, APScheduler, Docker. Тесты не требуют ни сети, ни токена.</p>
   </div>
-  <pre><b>git clone https://github.com/Olegg000/python-faq-bot</b>
+  <pre><b>git clone https://github.com/lendvis/python-faq-bot</b>
 cd python-faq-bot
 cp .env.example .env          <span style="color:#66747f"># BOT_TOKEN, ADMIN_IDS, MANAGER_CHAT_ID</span>
 <b>docker compose up -d --build</b>
@@ -320,7 +320,7 @@ pip install -r requirements.txt
 </main>
 
 <footer><div class="wrap">
-  Витрина проекта студии <a href="https://olegg000.github.io/lendvis/">Лендвис</a> · исходники на <a href="https://github.com/Olegg000/python-faq-bot">GitHub</a><br>
+  Витрина проекта студии <a href="https://lendvis.ru/">Лендвис</a> · исходники на <a href="https://github.com/lendvis/python-faq-bot">GitHub</a><br>
   Страница повторяет логику бота — тексты, прайс и расчёт слотов взяты из кода, — но к Telegram не подключается: это имитация сценария, а не работающий бот в браузере.
 </div></footer>
 
