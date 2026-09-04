@@ -157,3 +157,9 @@ SQLite в памяти. Отдельно закрыты неприятные с�
   `RateProvider` в `bot/rates.py` (метод `get_rates()`)
 - **База** — по умолчанию SQLite; тот же код работает с PostgreSQL сменой `DB_URL`
 - Легко добавляются новые пункты меню, уведомления менеджеру, админ-панель
+
+---
+
+**Студия Лендвис** — разработка сложных IT-продуктов.
+
+[lendvis.ru](https://lendvis.ru) · [hello@lendvis.ru](mailto:hello@lendvis.ru) · [Telegram](https://t.me/lendvis)
